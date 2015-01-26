@@ -90,7 +90,7 @@ int main()
 		//update the camera
 		camera.CheckInputKB(keyboard);
 		terrain.checkInputKB(keyboard);
-           
+
 		//DRAW
         //Prepare for drawing 
         // Clear color and depth buffer 

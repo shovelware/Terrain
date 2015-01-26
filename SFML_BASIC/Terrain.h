@@ -53,6 +53,7 @@ public:
 	void prevMap();
 
 	void checkInputKB(sf::Keyboard k);
+
 	void Init();
 	void Draw();
 };

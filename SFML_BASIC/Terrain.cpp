@@ -151,6 +151,24 @@ float Terrain::heightProcess(float h)
 }
 
 /* KEN'S METHOD
+=======
+	if (!(currentHeightMap._Ptr == NULL || x > 1 || y > 1))
+	{
+		sf::Image &hm = (*currentHeightMap);
+
+		unsigned int width = hm.getSize().x;
+		unsigned int height = hm.getSize().y;
+
+		sf::Color col = hm.getPixel(x * width, y * height);
+
+
+
+	}
+
+	return height;
+}
+
+>>>>>>> 064425f06a642e570f49f80bf8617483308336c3
 //helper function to calculate height of terrain at a given point in space
 //you will need to modify this significantly to pull height from a map
 float  Terrain::getHeight(float x,  float y){
@@ -168,6 +186,7 @@ float  Terrain::getHeight(float x,  float y){
 
 	return dist;
 }
+<<<<<<< HEAD
 */
 
 //getHeight takes OpenGL coords [-1 -> 1]
