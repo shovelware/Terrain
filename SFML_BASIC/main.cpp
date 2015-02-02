@@ -38,7 +38,7 @@ int main()
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 
-	aiVector3D position(0, 10,-30);
+	aiVector3D position(0, 60,-30);
 	Camera camera;
     camera.Init(position); //create a camera
       

@@ -11,11 +11,11 @@ public:
     aiVector3D position;
     aiVector3D forward;
     aiVector3D up;
-
-	aiVector3D look;//point that the camera will look at
+	aiVector3D right;
  
     float forwardSpeed;
     float roationSpeed;
+	bool keyPressed;
      
     Camera():forwardSpeed(0.5f),roationSpeed(0.1f){}
  
@@ -23,103 +23,116 @@ public:
         position=p;
         forward=f;
         up=u;
-		look = aiVector3D(0, 0, 0);
+		keyPressed = false;
+		right = aiVector3D(1, 0, 0);
     }
  
 	void CheckInputKB(sf::Keyboard k)
 	{
 		//W : Move forward
-		if (k.isKeyPressed(k.W))
+		if (k.isKeyPressed(k.W))// && keyPressed == false)
 		{
-			MoveForwardBack(+1);
+			MoveForwardBack(+0.1);
+			keyPressed = true;
 		}
 
 		//A : Move left
-		if (k.isKeyPressed(k.A))
+		if (k.isKeyPressed(k.A))// && keyPressed == false)
 		{
-			MoveLeftRight(-1);
+			MoveLeftRight(-0.1);
+			keyPressed = true;
 		}
 
 		//S : Move backward
-		if (k.isKeyPressed(k.S))
+		if (k.isKeyPressed(k.S))// && keyPressed == false)
 		{
-			MoveForwardBack(-1);
+			MoveForwardBack(-0.1);
+			keyPressed = true;
 		}
 
 		//D : Move right
-		if (k.isKeyPressed(k.D))
+		if (k.isKeyPressed(k.D))// && keyPressed == false)
 		{
-			MoveLeftRight(+1);
+			MoveLeftRight(+0.1);
+			keyPressed = true;
 		}
 
 		//Q : Move up
-		if (k.isKeyPressed(k.Q))
+		if (k.isKeyPressed(k.Q))// && keyPressed == false)
 		{
-			MoveUpDown(+1);
+			MoveUpDown(+0.1);
+			keyPressed = true;
 		}
 
 		//E : Move down
-		if (k.isKeyPressed(k.E))
+		if (k.isKeyPressed(k.E))// && keyPressed == false)
 		{
-			MoveUpDown(-1);
+			MoveUpDown(-0.1);
+			keyPressed = true;
 		}
 
 		//Up : Look up
-		if (k.isKeyPressed(k.Up))
+		if (k.isKeyPressed(k.Up))// && keyPressed == false)
 		{
-			TurnUpDown(+1);
+			TurnUpDown(+0.01);
+			keyPressed = true;
 		}
 
 		//Left : Look left
-		if (k.isKeyPressed(k.Left))
+		if (k.isKeyPressed(k.Left))// && keyPressed == false)
 		{
-			TurnLeftRight(-1);
+			TurnLeftRight(-0.01);
+			keyPressed = true;
 		}
 
 		//Down : Look down
-		if (k.isKeyPressed(k.Down))
+		if (k.isKeyPressed(k.Down))// && keyPressed == false)
 		{
-			TurnUpDown(-1);
+			TurnUpDown(-0.01);
+			keyPressed = true;
 		}
 
 		//Right : Look right
-		if (k.isKeyPressed(k.Right))
+		if (k.isKeyPressed(k.Right))// && keyPressed == false)
 		{
-			TurnLeftRight(+1);
+			TurnLeftRight(+0.01);
+			keyPressed = true;
 		}
 
+		//else keyPressed = false;
+
+
 	}
 
-	void MoveLeftRight(int dir){ //Dir=+1=>Right, dir=-1=> Left
+	void MoveLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		position.x += (forwardSpeed*dir);
+		position += (right * forwardSpeed*(dir));//need to fix this(forward or make a right?)
 	}
 
-	void MoveUpDown(int dir){ //Dir=+1=>Right, dir=-1=> Left
+	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		position.y += (up.y*(forwardSpeed*dir));
+		position.y += (up.y*(forwardSpeed*(dir)));
 	}
 
-	void MoveForwardBack(int dir){ //Dir=+1=>Forward, dir=-1=> Back
+	void MoveForwardBack(float dir){ //Dir=+1=>Forward, dir=-1=> Back
 
-		position += (forward*(forwardSpeed*dir));
+		position += (forward*(forwardSpeed*(dir)));
 	}
 
-	void TurnLeftRight(int dir){ //Dir=+1=>Right, dir=-1=> Left
+	void TurnLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		forward.x += dir;//or look?
+		forward.x += (dir);//and this only rotates so far. need to fix this as well
 	}
 
-	void TurnUpDown(int dir){ //Dir=+1=>Up, dir=-1=> Down
+	void TurnUpDown(float dir){ //Dir=+1=>Up, dir=-1=> Down
 		//TODO
-		forward.y += dir;//or look?
+		forward.y += (dir);
 	}
  
     void ViewingTransform(){
         gluLookAt(	position.x,position.y,position.z,// camera position
-			forward.x, forward.y, forward.z, //look at this point //TODO: BUG here!! what is it ??
+			position.x+forward.x, position.y+forward.y, position.z+forward.z, //look at this point //TODO: BUG here!! what is it ??
 					0,1,0); //camera up
-		//cout << forward.x << forward.y << forward.z << endl;
     }
  
 };
