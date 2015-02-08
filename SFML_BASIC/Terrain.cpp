@@ -10,7 +10,7 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.
 	terrDepth=50;
 	vertices=NULL;
 	colors=NULL;	
-	
+	texCoords = NULL;
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
 	 numVerts=gridDepth * gridWidth * 2 * 3;
@@ -22,6 +22,7 @@ Terrain::~Terrain(void)
 {
 	delete [] vertices;
 	delete [] colors;
+	delete[] texCoords;
 }
 
 //interpolate between two values
@@ -318,13 +319,16 @@ void Terrain::Init(){
 	vertices=new vector3[numVerts];
 	delete [] colors;
 	colors=new vector3[numVerts];
+	delete[] texCoords;
+	texCoords = new vector3[numVerts];
 
 	//If we're empty try to load
 	if (heightMaps.empty())
 	{
 		LoadImages(index);
 	}
-
+	float xT = 0;
+	float yT = 0;
 	//interpolate along the edges to generate interior points
 	for (int i = 0; i < gridWidth - 1; i++) //iterate left to right
 	{
@@ -347,30 +351,50 @@ void Terrain::Init(){
 			front + ----- + 
 			     left   right
 				 */
+			
+			
+
+			//Each vertex on the grid should have an appropriate texture coordinate
+			//using glTexCood2D().One corner of the grid should have texture 
+			//coordinates of(0, 0), opposite corner should be(1, 1) 
+			//all other vertices should have appropriate values
+
+
 			//tri1
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
+			//set texture co-ord here?
+			setPoint(texCoords[vertexNum], xT, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
+			setPoint(texCoords[vertexNum], xT+0.01, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			setPoint(texCoords[vertexNum], xT, yT+0.01, 0);
 
 
 			//declare a degenerate triangle
 			//TODO: fix this to draw the correct triangle
 
-
+			//tri2
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			setPoint(texCoords[vertexNum], xT, yT+0.01, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
+			setPoint(texCoords[vertexNum], xT-=0.01, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
+			setPoint(texCoords[vertexNum], xT, yT, 0);
+
+			//ok now to actually move the tex coords for the
+			yT += 0.01;
 		}
+		xT += 0.01;
 	}
 
 
@@ -379,11 +403,12 @@ void Terrain::Init(){
 }
 
 void Terrain::Draw(){
-
+	//numVerts = 60000!!!
 	glBegin(GL_TRIANGLES);
 	for(int i =0;i<numVerts;i++){
 			glColor3fv(colors[i]);
 			glVertex3fv(vertices[i]);
+			//glTexCoord2f(*texCoords[i]);
 	}
 	glEnd();
 }

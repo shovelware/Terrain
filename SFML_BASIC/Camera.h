@@ -74,28 +74,28 @@ public:
 		//Up : Look up
 		if (k.isKeyPressed(k.Up))// && keyPressed == false)
 		{
-			TurnUpDown(+0.01);
+			TurnUpDown(+0.5);
 			keyPressed = true;
 		}
 
 		//Left : Look left
 		if (k.isKeyPressed(k.Left))// && keyPressed == false)
 		{
-			TurnLeftRight(-0.01);
+			TurnLeftRight(+0.5);
 			keyPressed = true;
 		}
 
 		//Down : Look down
 		if (k.isKeyPressed(k.Down))// && keyPressed == false)
 		{
-			TurnUpDown(-0.01);
+			TurnUpDown(-0.5);
 			keyPressed = true;
 		}
 
 		//Right : Look right
 		if (k.isKeyPressed(k.Right))// && keyPressed == false)
 		{
-			TurnLeftRight(+0.01);
+			TurnLeftRight(-0.5);
 			keyPressed = true;
 		}
 
@@ -106,7 +106,12 @@ public:
 
 	void MoveLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		position += (right * forwardSpeed*(dir));//need to fix this(forward or make a right?)
+		//cross product of forwrad and up to give us right
+		aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
+			(forward.z*up.x) - (forward.x*up.z),
+			(forward.x*up.y) - (forward.y*up.x));
+
+		position += temp * (forwardSpeed*(dir));//need to fix this(forward or make a right?)
 	}
 
 	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
@@ -121,12 +126,14 @@ public:
 
 	void TurnLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		forward.x += (dir);//and this only rotates so far. need to fix this as well
+		//yaw = sin(dir in radians) * cos(dir in radians)
+		forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
 	}
 
-	void TurnUpDown(float dir){ //Dir=+1=>Up, dir=-1=> Down
+	void TurnUpDown(float dir){//Dir=+1=>Up, dir=-1=> Down
 		//TODO
-		forward.y += (dir);
+		//pitch = sin(dir in radians)
+		forward.y += sin(dir * (3.14/180));
 	}
  
     void ViewingTransform(){

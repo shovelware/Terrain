@@ -16,6 +16,7 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector3 *vertices;
 	vector3 *colors;
+	vector3 *texCoords;
 	
 	bool loadImage();
 
