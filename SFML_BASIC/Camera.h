@@ -137,8 +137,8 @@ public:
 	}
  
     void ViewingTransform(){
-        gluLookAt(	position.x,position.y,position.z,// camera position
-			position.x+forward.x, position.y+forward.y, position.z+forward.z, //look at this point //TODO: BUG here!! what is it ??
+        gluLookAt(	position.x, position.y, position.z,// camera position
+			position.x + forward.x, position.y + forward.y, position.z + forward.z, //look at this point //TODO: BUG here!! what is it ??
 					0,1,0); //camera up
     }
  

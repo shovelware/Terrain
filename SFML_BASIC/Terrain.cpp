@@ -3,8 +3,8 @@
 
 Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.1)
 {
-	gridWidth=100; //squares in grid
-	gridDepth=100;
+	gridWidth=50; //squares in grid
+	gridDepth=50;
 
 	terrWidth=50; //size of terrain in world units
 	terrDepth=50;
@@ -54,6 +54,14 @@ float Terrain::normalisePos(float pos,  float max)
 	return 0 + (1 / max) * pos;
 
 	//(pos + start) / (end - start);
+}
+
+float Terrain::normaliseGridPos(float x, float y)
+{
+	float normX = normalisePos(x + 25, 50);
+	float normY = normalisePos(y + 25, 50);
+
+	return normX, normY;
 }
 
 //Wrapper function for vector2f support
@@ -125,13 +133,11 @@ float Terrain::colorProcess(sf::Color c)
 //Use the same switch as colorProcess, controlled by currentProcess as well
 float Terrain::heightProcess(float h)
 {
-	float hie;
 	switch (currentProcess)
 	{
 		//Average of rgb values, works for greyscale too.
 	case AVERAGE:
-		hie = h / (h * hAdjust);
-		return hie;
+		return h / 50;// / (h * hAdjust);
 		break;
 
 		//Addition of rgb values, straight up.
@@ -270,7 +276,6 @@ void Terrain::nextMap()
 	//If we've actually changed
 	if (crementIter(1))
 	{
-		cout << "NEXT MAP" << endl;
 		Init();
 	}
 }
@@ -280,37 +285,49 @@ void Terrain::prevMap()
 {
 	if (crementIter(-1))
 	{
-		cout << "PREV MAP" << endl;
 		Init();
 	}
 }
 
 void Terrain::checkInputKB(sf::Keyboard k)
 {
-	static bool comma;
-	static bool period;
+	static bool kComma;
+	static bool kPeriod;
+	static bool kI;
 
 	//< : Previous Map
 	if (k.isKeyPressed(k.Comma))
 	{
-		if (!comma)
+		if (!kComma)
 			prevMap();
 
-		comma = true;
+		kComma = true;
 	}
 
-	else comma = false;
+	else kComma = false;
 
 	//> : Next Map
 	if (k.isKeyPressed(k.Period))
 	{
-		if (!period)
+		if (!kPeriod)
 			nextMap();
 
-		period = true;
+		kPeriod = true;
 	}
 
-	else period = false;
+	else kPeriod = false;
+
+
+	//I : Toggle wireframe
+	if (k.isKeyPressed(k.I))
+	{
+		if (!kI)
+			solid = !solid;
+
+		kI = true;
+	}
+
+	else kI = false;
 }
 
 void Terrain::Init(){
@@ -327,6 +344,7 @@ void Terrain::Init(){
 	{
 		LoadImages(index);
 	}
+
 	float xT = 0;
 	float yT = 0;
 	//interpolate along the edges to generate interior points
@@ -336,6 +354,7 @@ void Terrain::Init(){
 		{
 			int sqNum = (j + i * gridDepth);
 			int vertexNum = sqNum * 3 * 2; //6 vertices per square (2 tris)
+
 			float front = lerp(-terrDepth / 2, terrDepth / 2, (float)j / gridDepth);
 			float back  = lerp(-terrDepth / 2, terrDepth / 2, (float)(j + 1) / gridDepth);
 			float left = lerp(-terrWidth / 2, terrWidth / 2, (float)i / gridDepth);
@@ -343,16 +362,14 @@ void Terrain::Init(){
 			
 			/*
 			back  + ----- + 	looking from above,  the grid is made up of regular squares
-			       |tri1/|	'left & 'right' are the x cooded of the edges of the square
+			       |tri2/|	'left & 'right' are the x cooded of the edges of the square
 				   |   / |	'back' & 'front' are the y coords of the square
 				   |  /  |	each square is made of two triangles (1 & 2)
 				   | /   |	
-				   |/tri2|
+				   |/tri1|
 			front + ----- + 
 			     left   right
 				 */
-			
-			
 
 			//Each vertex on the grid should have an appropriate texture coordinate
 			//using glTexCood2D().One corner of the grid should have texture 
@@ -363,7 +380,6 @@ void Terrain::Init(){
 			//tri1
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
-			//set texture co-ord here?
 			setPoint(texCoords[vertexNum], xT, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
@@ -382,11 +398,11 @@ void Terrain::Init(){
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
 			setPoint(texCoords[vertexNum], xT, yT+0.01, 0);
-
+			
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
 			setPoint(texCoords[vertexNum], xT-=0.01, yT, 0);
-
+			
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
 			setPoint(texCoords[vertexNum], xT, yT, 0);
@@ -404,11 +420,18 @@ void Terrain::Init(){
 
 void Terrain::Draw(){
 	//numVerts = 60000!!!
-	glBegin(GL_TRIANGLES);
-	for(int i =0;i<numVerts;i++){
+
+	if (solid)
+		glBegin(GL_TRIANGLES);
+	
+	else glBegin(GL_LINES);
+
+	for(int i = 0 ; i < numVerts ; ++i)
+	{
 			glColor3fv(colors[i]);
 			glVertex3fv(vertices[i]);
 			//glTexCoord2f(*texCoords[i]);
 	}
+
 	glEnd();
 }

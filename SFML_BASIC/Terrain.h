@@ -21,7 +21,8 @@ class Terrain
 	bool loadImage();
 
 	Vector2f normalisePos(Vector2f pos, Vector2f max);
-	float normalisePos(float pos, float max);
+	float normalisePos(float pos, float max); 
+	float normaliseGridPos(float pos, float max);
 
 	float heightMapLookup(Vector2f pos);
 	float heightMapLookup(float x, float y);
@@ -41,6 +42,8 @@ class Terrain
 	float heightProcess(float h);
 
 	float hAdjust;
+
+	bool solid;
 
 public:
 	Terrain(void);

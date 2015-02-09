@@ -38,9 +38,10 @@ int main()
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 
-	aiVector3D position(0, 60,-30);
+	aiVector3D position(0, 20, 30);
+	aiVector3D zaxis(0, 0, 1); //-z to turn camera around
 	Camera camera;
-    camera.Init(position); //create a camera
+    camera.Init(position, zaxis); //create a camera
       
     //prepare OpenGL surface for HSR 
     glClearDepth(1.f); 
@@ -53,11 +54,8 @@ int main()
     glLoadIdentity(); 
      
     //set up a 3D Perspective View volume
-    gluPerspective(90.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+    gluPerspective(110.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
  
-
-
-
 	//load & bind the shader
 	sf::Shader shader;
 	//all the lighting & texture blending code should  be put in 'fragment.glsl'
