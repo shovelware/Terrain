@@ -17,6 +17,7 @@ class Terrain
 	vector3 *vertices;
 	vector3 *colors;
 	vector3 *texCoords;
+	std::vector<sf::Vector2f>texCo;
 	
 	bool loadImage();
 

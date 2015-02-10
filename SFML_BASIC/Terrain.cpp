@@ -371,24 +371,16 @@ void Terrain::Init(){
 			     left   right
 				 */
 
-			//Each vertex on the grid should have an appropriate texture coordinate
-			//using glTexCood2D().One corner of the grid should have texture 
-			//coordinates of(0, 0), opposite corner should be(1, 1) 
-			//all other vertices should have appropriate values
-
 
 			//tri1
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
-			setPoint(texCoords[vertexNum], xT, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
-			setPoint(texCoords[vertexNum], xT+0.01, yT, 0);
 
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
-			setPoint(texCoords[vertexNum], xT, yT+0.01, 0);
 
 
 			//declare a degenerate triangle
@@ -397,30 +389,21 @@ void Terrain::Init(){
 			//tri2
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
-			setPoint(texCoords[vertexNum], xT, yT+0.01, 0);
 			
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
-			setPoint(texCoords[vertexNum], xT-=0.01, yT, 0);
 			
 			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
 			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
-			setPoint(texCoords[vertexNum], xT, yT, 0);
 
-			//ok now to actually move the tex coords for the
-			yT += 0.01;
 		}
-		xT += 0.01;
 	}
 
 
-
-
+	std::cout << "num verts: " << numVerts << std::endl;
 }
 
 void Terrain::Draw(){
-	//numVerts = 60000!!!
-
 	if (solid)
 		glBegin(GL_TRIANGLES);
 	
@@ -430,7 +413,8 @@ void Terrain::Draw(){
 	{
 			glColor3fv(colors[i]);
 			glVertex3fv(vertices[i]);
-			//glTexCoord2f(*texCoords[i]);
+			glTexCoord2d(vertices[i][0]/gridWidth, vertices[i][2]/gridDepth);//this will do some of the grid(technically all). lerp fucks it up(apparently)
+			//lerp throws the position off. somehow need vertices before lerp
 	}
 
 	glEnd();

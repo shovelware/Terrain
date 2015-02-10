@@ -128,12 +128,16 @@ public:
 		//TODO
 		//yaw = sin(dir in radians) * cos(dir in radians)
 		forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
+
 	}
 
 	void TurnUpDown(float dir){//Dir=+1=>Up, dir=-1=> Down
 		//TODO
 		//pitch = sin(dir in radians)
 		forward.y += sin(dir * (3.14/180));
+		//aiMatrix3x3 m; //creat a 3x3 matrix
+		//m.Rotation(dir*(3.14 / 180), up, m);
+		//up *= m;
 	}
  
     void ViewingTransform(){
