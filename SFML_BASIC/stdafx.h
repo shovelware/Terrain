@@ -25,6 +25,6 @@ using std::string;
 using std::cout;
 using std::endl;
 
-static string basepath = "asset/";
+static string mapbasepath = "asset/map/";
 
 // TODO: reference additional headers your program requires here

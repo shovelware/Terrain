@@ -35,6 +35,7 @@ int main()
     
     int width=600,height=600;
 	sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL"); 
+	//sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL", 7U, sf::ContextSettings(0U, 0U, 8U, 2U, 0U)); //ANTIALIASING
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 

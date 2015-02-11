@@ -1,4 +1,0 @@
-map10.png
-map200sphere.png
-map10topleft.png
-map100topleft.png
