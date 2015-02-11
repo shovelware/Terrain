@@ -74,28 +74,28 @@ public:
 		//Up : Look up
 		if (k.isKeyPressed(k.Up))// && keyPressed == false)
 		{
-			TurnUpDown(+0.5);
+			TurnUpDown(-0.5);
 			keyPressed = true;
 		}
 
 		//Left : Look left
 		if (k.isKeyPressed(k.Left))// && keyPressed == false)
 		{
-			TurnLeftRight(+0.5);
+			TurnLeftRight(-0.5);
 			keyPressed = true;
 		}
 
 		//Down : Look down
 		if (k.isKeyPressed(k.Down))// && keyPressed == false)
 		{
-			TurnUpDown(-0.5);
+			TurnUpDown(0.5);
 			keyPressed = true;
 		}
 
 		//Right : Look right
 		if (k.isKeyPressed(k.Right))// && keyPressed == false)
 		{
-			TurnLeftRight(-0.5);
+			TurnLeftRight(0.5);
 			keyPressed = true;
 		}
 
@@ -106,17 +106,18 @@ public:
 
 	void MoveLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		//cross product of forwrad and up to give us right
+		//cross product of forward and up to give us right
 		aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
 			(forward.z*up.x) - (forward.x*up.z),
 			(forward.x*up.y) - (forward.y*up.x));
 
-		position += temp * (forwardSpeed*(dir));//need to fix this(forward or make a right?)
+		position += temp.Normalize() * (forwardSpeed*(dir));
 	}
 
 	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
 		position.y += (up.y*(forwardSpeed*(dir)));
+		//position.y += (up.y*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
 	}
 
 	void MoveForwardBack(float dir){ //Dir=+1=>Forward, dir=-1=> Back
@@ -126,18 +127,29 @@ public:
 
 	void TurnLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		//yaw = sin(dir in radians) * cos(dir in radians)
-		forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
+
+		//forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
+		aiQuaternion Quat = aiQuaternion(up, (dir*0.01));
+		forward = Quat.Rotate(forward);
+		up = Quat.Rotate(up);
 
 	}
 
 	void TurnUpDown(float dir){//Dir=+1=>Up, dir=-1=> Down
 		//TODO
-		//pitch = sin(dir in radians)
-		forward.y += sin(dir * (3.14/180));
-		//aiMatrix3x3 m; //creat a 3x3 matrix
-		//m.Rotation(dir*(3.14 / 180), up, m);
-		//up *= m;
+
+		//forward.y += sin(dir * (3.14/180));
+
+		//get the right vector
+		aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
+			(forward.z*up.x) - (forward.x*up.z),
+			(forward.x*up.y) - (forward.y*up.x));
+
+
+		aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir*0.01));
+		forward = Quat.Rotate(forward);
+		up = Quat.Rotate(up);
+
 	}
  
     void ViewingTransform(){

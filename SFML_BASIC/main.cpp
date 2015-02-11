@@ -55,6 +55,10 @@ int main()
      
     //set up a 3D Perspective View volume
     gluPerspective(110.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+	//possibly how we do an orthographics perspective?
+	//set up a  orthographic projection same size as window
+	//this means the vertex coordinates are in pixel space
+	//glOrtho(0, 800, 0, 600, 0, 1); // use pixel coordinates
  
 	//load & bind the shader
 	sf::Shader shader;
