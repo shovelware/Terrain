@@ -66,6 +66,10 @@ public:
 
 	void checkInputKB(sf::Keyboard k);
 
+	void calculateNormal(sf::Vector3f a, sf::Vector3f b, int index);
+	sf::Vector3f calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c);
+
+
 	void Init();
 	void Draw();
 };

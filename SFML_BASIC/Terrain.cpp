@@ -355,6 +355,21 @@ void Terrain::checkInputKB(sf::Keyboard k)
 	else kI = false;
 }
 
+void Terrain::calculateNormal(sf::Vector3f a, sf::Vector3f b, int index){
+	normals[index][0] = (a.y * b.z) - (a.z * b.y);
+	normals[index][1] = (a.z * b.x) - (a.x * b.z);
+	normals[index][2] = (a.x * b.y) - (a.y * b.x);
+
+}
+
+sf::Vector3f Terrain::calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c){
+	sf::Vector3f d;
+	d.x = (a.x + b.x + c.x) / 3.0f;
+	d.y = (a.y + b.y + c.y) / 3.0f;
+	d.z = (a.z + b.z + c.z) / 3.0f;
+	return d;
+}
+
 void Terrain::Init(){
 	
 	delete [] vertices;//just in case we've called init before
@@ -363,6 +378,9 @@ void Terrain::Init(){
 	colors=new vector3[numVerts];
 	delete[] texCoords;
 	texCoords = new vector3[numVerts];
+	delete[] normals;
+	normals = new vector3[numVerts];
+
 
 	//If we're empty try to load
 	if (heightMaps.empty())
@@ -400,35 +418,48 @@ void Terrain::Init(){
 			//Order: Vertex, Normal, Color, Texture
 
 			//tri1
+			//side a
 			setVert(vertexNum, left, getHeight(left, front), front);
 			setCol(vertexNum, 255, 0, 0);
+			//calulate normal wit num and num + 1
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
+			//side b
 			setVert(vertexNum, right, getHeight(right, front), front);
 			setCol(vertexNum, 0, 255, 0);
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
+			//side c
 			setVert(vertexNum, right, getHeight(right, back), back);
 			setCol(vertexNum, 0, 0, 255);
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
 
 			//declare a degenerate triangle
 			//TODO: fix this to draw the correct triangle
 
 			//tri2
+			//side a
 			setVert(vertexNum, right, getHeight(right, back), back);
 			setCol(vertexNum, 0, 255, 255);
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
+			//side b
 			setVert(vertexNum, left, getHeight(left, back), back);
 			setCol(vertexNum, 255, 0, 255);
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
+			//side c
 			setVert(vertexNum, left, getHeight(left, front), front);
 			setCol(vertexNum, 255, 255, 0);
+			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
 			vertexNum++;
-
 		}
 	}
 
