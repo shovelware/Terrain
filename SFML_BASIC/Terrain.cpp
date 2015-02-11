@@ -3,19 +3,22 @@
 
 Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.1)
 {
-	gridWidth=50; //squares in grid
-	gridDepth=50;
+	gridWidth=25; //squares in grid
+	gridDepth=25;
 
-	terrWidth=50; //size of terrain in world units
-	terrDepth=50;
+	terrWidth=25; //size of terrain in world units
+	terrDepth=25;
+
 	vertices=NULL;
+	normals = NULL;
 	colors=NULL;	
 	texCoords = NULL;
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
 	 numVerts=gridDepth * gridWidth * 2 * 3;
 
-
+	 //Avg. of width and depth
+	 hAdjust = (gridWidth + gridDepth) / 2;
 }
 
 Terrain::~Terrain(void)
@@ -30,11 +33,36 @@ float lerp(float start,  float end,  float t){
 	return start + (end-start) * t;
 }
 
-void Terrain::setPoint(vector3 v, float x,  float y,  float z){
+//Set vertex given an index and xyz
+void Terrain::setVert(int index, float x, float y, float z)
+{
+	vertices[index][0] = x;
+	vertices[index][1] = y;
+	vertices[index][2] = z;
+};
 
-		v[0] = x;
-		v[1] = y;
-		v[2] = z;
+//Sets colour given an index and rgb (Safe for >255 values)
+void Terrain::setCol(int index, float r, float g, float b)
+{
+	colors[index][0] = r <= 255 ? r : 255;
+	colors[index][1] = g <= 255 ? g : 255;
+	colors[index][2] = b <= 255 ? b : 255;
+}
+
+void Terrain::setColRand(int index, float minR, float minG, float minB)
+{
+	//[num] = rand() % [range + 1] + [min];
+	colors[index][0] = rand() % 256 + minR;
+	colors[index][1] = rand() % 256 + minG;
+	colors[index][2] = rand() % 256 + minB;
+}
+
+//Set normal given an index (Safe for > 1 values)
+void Terrain::setNorm(int index, float x, float y, float z)
+{
+	normals[index][0] = (0 < x && x < 1) ? x : 0;
+	normals[index][1] = (0 < y && y < 1) ? y : 0;
+	normals[index][2] = (0 < z && z < 1) ? z : 0;
 }
 
 //Wrapper function for vector2f support (max is maximum x,  maximum y)
@@ -87,10 +115,7 @@ float Terrain::heightMapLookup(float x,  float y)
 		unsigned int mapWidth = hm.getSize().x;
 		unsigned int mapHeight = hm.getSize().y;
 
-		sf::Color col = hm.getPixel(x * mapWidth, y * mapHeight);
-
-		if (col.r > 128)
-			int d = 0;
+		sf::Color col = hm.getPixel(mapWidth - (x * mapWidth), mapHeight - (y * mapHeight));
 
 		//Do some stuff with the color for calculations
 		height = (heightProcess(colorProcess(col)));
@@ -137,7 +162,7 @@ float Terrain::heightProcess(float h)
 	{
 		//Average of rgb values, works for greyscale too.
 	case AVERAGE:
-		return h / 50;// / (h * hAdjust);
+		return h / hAdjust;// / (h / hAdjust);
 		break;
 
 		//Addition of rgb values, straight up.
@@ -357,8 +382,9 @@ void Terrain::Init(){
 
 			float front = lerp(-terrDepth / 2, terrDepth / 2, (float)j / gridDepth);
 			float back  = lerp(-terrDepth / 2, terrDepth / 2, (float)(j + 1) / gridDepth);
-			float left = lerp(-terrWidth / 2, terrWidth / 2, (float)i / gridDepth);
-			float right = lerp(-terrDepth / 2, terrDepth / 2, (float)(i + 1) / gridDepth);
+
+			float left = lerp(-terrWidth / 2, terrWidth / 2, (float)i / gridWidth);
+			float right = lerp(-terrWidth / 2, terrWidth / 2, (float)(i + 1) / gridWidth);
 			
 			/*
 			back  + ----- + 	looking from above,  the grid is made up of regular squares
@@ -371,30 +397,37 @@ void Terrain::Init(){
 			     left   right
 				 */
 
+			//Order: Vertex, Normal, Color, Texture
 
 			//tri1
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
+			setVert(vertexNum, left, getHeight(left, front), front);
+			setCol(vertexNum, 255, 0, 0);
+			vertexNum++;
 
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], right, getHeight(right, front), front);
+			setVert(vertexNum, right, getHeight(right, front), front);
+			setCol(vertexNum, 0, 255, 0);
+			vertexNum++;
 
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
+			setVert(vertexNum, right, getHeight(right, back), back);
+			setCol(vertexNum, 0, 0, 255);
+			vertexNum++;
 
 
 			//declare a degenerate triangle
 			//TODO: fix this to draw the correct triangle
 
 			//tri2
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], right, getHeight(right, back), back);
-			
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], left, getHeight(left, back), back);
-			
-			setPoint(colors[vertexNum], (rand() % 255) / 255.0, (rand() % 255) / 255.0, (rand() % 255) / 255.0);
-			setPoint(vertices[vertexNum++], left, getHeight(left, front), front);
+			setVert(vertexNum, right, getHeight(right, back), back);
+			setCol(vertexNum, 0, 255, 255);
+			vertexNum++;
+
+			setVert(vertexNum, left, getHeight(left, back), back);
+			setCol(vertexNum, 255, 0, 255);
+			vertexNum++;
+
+			setVert(vertexNum, left, getHeight(left, front), front);
+			setCol(vertexNum, 255, 255, 0);
+			vertexNum++;
 
 		}
 	}
