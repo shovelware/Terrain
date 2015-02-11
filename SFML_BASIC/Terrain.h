@@ -55,8 +55,8 @@ class Terrain
 
 	int hAdjust;
 
-	bool drawSolid;
-	bool drawNormals;
+	bool drawSolid = true;
+	bool drawNormals = false;
 
 public:
 	Terrain(void);

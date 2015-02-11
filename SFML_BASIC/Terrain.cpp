@@ -531,10 +531,12 @@ void Terrain::Draw(){
 	{
 		glBegin(GL_LINES);
 				
-			//glColor3fv()
-			//for (int i = 0; i < numVerts; ++i)
-			//{
-			//}
+		glColor3fv(SFtoGL(sf::Vector3f(0.2, 0.1, 0.5)));
+			for (int i = 0; i < numVerts; ++i)
+			{
+				glVertex3fv(vertices[i]);
+				glVertex3fv(normals[i]);
+			}
 		glEnd();
 	}
 }
