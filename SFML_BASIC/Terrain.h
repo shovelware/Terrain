@@ -24,6 +24,8 @@ class Terrain
 
 	std::vector<sf::Vector2f>texCo;
 	
+	sf::Shader * shader;
+
 	bool loadImage();
 
 	Vector2f normalisePos(Vector2f pos, Vector2f max);
@@ -59,11 +61,13 @@ class Terrain
 	bool drawNormals = false;
 
 public:
+	int hMax;
 	Terrain(void);
 	~Terrain(void);
 
 	string index;
-	int hMax;
+
+	void setShader(sf::Shader *);
 
 	void LoadImages(string filepath);
 

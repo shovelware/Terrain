@@ -1,17 +1,21 @@
 #include "stdafx.h"
 #include "Terrain.h"
 
-Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.1)
+Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 {
 	gridWidth = 50; //squares in grid
 	gridDepth = 50;
-	terrWidth = 25; //size of terrain in world units
-	terrDepth = 25;
+
+	//50*50 makes heightmaps work, do not change!
+	terrWidth = 50; //size of terrain in world units
+	terrDepth = 50;
+
 	vertices = NULL;
 	normals = NULL;
 	avergeNormals = NULL;
 	colors = NULL;	
 	texCoords = NULL;
+
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
 	 numVerts = gridDepth * gridWidth * 2 * 3;
@@ -58,6 +62,12 @@ void Terrain::setCol(int index, float r, float g, float b)
 	colors[index][0] = r <= 255 ? r : 255;
 	colors[index][1] = g <= 255 ? g : 255;
 	colors[index][2] = b <= 255 ? b : 255;
+}
+
+//Sets the shader variable to be the passed shader
+void Terrain::setShader(sf::Shader * inshader)
+{
+	shader = inshader;
 }
 
 //Sets a texture coordinate (Likes 0 < value < 1 but can deal with others)
@@ -140,13 +150,13 @@ float Terrain::heightMapLookup(float x,  float y)
 		unsigned int mapWidth = hm.getSize().x;
 		unsigned int mapHeight = hm.getSize().y;
 
-		sf::Color col = hm.getPixel(mapWidth - (x * mapWidth), mapHeight - (y * mapHeight));
+		sf::Color col = hm.getPixel(x * mapWidth, y * mapHeight);
 
 		//Do some stuff with the color for calculations
 		height = (heightProcess(colorProcess(col)));
 	}
 
-	else cout << "Invalid heightMapLookup" << endl;
+	else cout << "Invalid heightMapLookup: (" << x << ", " << y << ")" << endl;
 
 	return height;
 }
@@ -298,7 +308,7 @@ bool Terrain::crementIter(int direction)
 
 void Terrain::LoadImages(string indexfile)
 {
-	std::cout << "Loading images" << endl;
+	std::cout << "Loading images:" << endl;
 	string c;
 	std::ifstream myfile;
 
@@ -307,13 +317,16 @@ void Terrain::LoadImages(string indexfile)
 	myfile.open(mapbasepath + indexfile);
 	while (myfile >> c) 
 	{
-		if (!temp.loadFromFile(mapbasepath + c))
+		if (c != "" && (c[0] != '//' && c[1] != '//'))
 		{
+			if (!temp.loadFromFile(mapbasepath + c + ".png"))
+			{
+				heightMaps.push_back(temp);
+				continue;
+			}
+			std::cout << "\t" << c << endl;
 			heightMaps.push_back(temp);
-			continue;
 		}
-		std::cout << "\t" << "Loaded: " << c << endl;
-		heightMaps.push_back(temp);
 	}
 	myfile.close();
 
@@ -435,9 +448,9 @@ void Terrain::Init(){
 	float xT = 0;
 	float yT = 0;
 	//interpolate along the edges to generate interior points
-	for (int index = 0, i = 0; i < gridWidth - 1; i++) //iterate left to right
+	for (int index = 0, i = 0; i < (gridWidth - 1); i++) //iterate left to right
 	{
-		for(int j = 0; j < gridDepth - 1; j++)//iterate front to back
+		for(int j = 0; j < (gridDepth - 1); j++)//iterate front to back
 		{
 			int sqNum = (j + i * gridDepth);
 			int vertexNum = sqNum * 3 * 2; //6 vertices per square (2 tris)
@@ -524,6 +537,10 @@ void Terrain::Draw(){
 		glBegin(GL_TRIANGLES);
 	
 	else glBegin(GL_LINES);
+	
+
+	//shader->setParameter("normals", false);
+	//shader->setParameter("maxheight", hMax);
 
 	for(int i = 0 ; i < numVerts ; ++i)
 	{
@@ -535,17 +552,19 @@ void Terrain::Draw(){
 	}
 	glEnd();
 
+
 	//Drawing number loop
 	if (drawNormals)
 	{
 		glBegin(GL_LINES);
-				
+
 		glColor3f(1, 0, 0);
-			for (int i = 0; i < numVerts; ++i)
-			{
-				glVertex3fv(vertices[i]);
-				glVertex3fv(*vertices[i] + *normals[i]);
-			}
+		for (int i = 0; i < numVerts; ++i)
+		{
+			glVertex3fv(vertices[i]);
+			vector3 vertPlusNorm = { vertices[i][0] + normals[i][0], vertices[i][1] + normals[i][1], vertices[i][2] + normals[i][2] };
+			glVertex3fv(vertPlusNorm);
+		}
 		glEnd();
 	}
 }

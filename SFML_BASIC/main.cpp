@@ -74,6 +74,7 @@ int main()
 	//Create our Terrain
 	Terrain terrain;
 	terrain.Init();
+	terrain.setShader(&shader);
 
     // Start game loop 
     while (window.isOpen()) 
@@ -117,10 +118,11 @@ int main()
 		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		//draw the world
+
+		shader.setParameter("normals", false);
 		shader.setParameter("maxheight", terrain.hMax);
 		terrain.Draw();
 
-		   
         // Finally, display rendered frame on screen 
         window.display(); 
     } 

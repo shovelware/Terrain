@@ -1,6 +1,8 @@
 varying float vertheight;
 uniform float maxheight;
 
+uniform bool normals;
+
 void main()
 {
 	vertheight = gl_Vertex[1]; //Pull y coord for fragment shader
