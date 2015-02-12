@@ -21,3 +21,6 @@ map200cloud
 map200island
 map200swirl
 map200noise
+
+jaysMap
+jaysMap2

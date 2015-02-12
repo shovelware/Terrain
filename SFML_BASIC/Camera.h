@@ -74,28 +74,28 @@ public:
 		//Up : Look up
 		if (k.isKeyPressed(k.Up))// && keyPressed == false)
 		{
-			TurnUpDown(-0.5);
+			TurnUpDown(-0.01);
 			keyPressed = true;
 		}
 
 		//Left : Look left
 		if (k.isKeyPressed(k.Left))// && keyPressed == false)
 		{
-			TurnLeftRight(-0.5);
+			TurnLeftRight(-0.01);
 			keyPressed = true;
 		}
 
 		//Down : Look down
 		if (k.isKeyPressed(k.Down))// && keyPressed == false)
 		{
-			TurnUpDown(0.5);
+			TurnUpDown(0.01);
 			keyPressed = true;
 		}
 
 		//Right : Look right
 		if (k.isKeyPressed(k.Right))// && keyPressed == false)
 		{
-			TurnLeftRight(0.5);
+			TurnLeftRight(0.01);
 			keyPressed = true;
 		}
 
@@ -116,8 +116,8 @@ public:
 
 	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		position.y += (up.y*(forwardSpeed*(dir)));
-		//position.y += (up.y*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
+		//position.y += (up.y*(forwardSpeed*(dir)));
+		position += (up*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
 	}
 
 	void MoveForwardBack(float dir){ //Dir=+1=>Forward, dir=-1=> Back
@@ -129,7 +129,7 @@ public:
 		//TODO
 
 		//forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
-		aiQuaternion Quat = aiQuaternion(up, (dir*0.01));
+		aiQuaternion Quat = aiQuaternion(up, (dir));
 		forward = Quat.Rotate(forward);
 		up = Quat.Rotate(up);
 
@@ -146,7 +146,7 @@ public:
 			(forward.x*up.y) - (forward.y*up.x));
 
 
-		aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir*0.01));
+		aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir));
 		forward = Quat.Rotate(forward);
 		up = Quat.Rotate(up);
 
