@@ -16,6 +16,7 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector3 *vertices;
 	vector3 *normals;
+	vector3 *avergeNormals;
 	vector3 *colors;
 	vector3 *texCoords;
 	std::vector<sf::Vector2f>texCo;
@@ -67,7 +68,7 @@ public:
 	void checkInputKB(sf::Keyboard k);
 
 	void calculateNormal(sf::Vector3f a, sf::Vector3f b, int index);
-	sf::Vector3f calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c);
+	void calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c, int index);
 
 
 	void Init();

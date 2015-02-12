@@ -11,6 +11,7 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.
 
 	vertices=NULL;
 	normals = NULL;
+	avergeNormals = NULL;
 	colors=NULL;	
 	texCoords = NULL;
 	//num squares in grid will be width*height,  two triangles per square
@@ -25,7 +26,9 @@ Terrain::~Terrain(void)
 {
 	delete [] vertices;
 	delete [] colors;
-	delete[] texCoords;
+	delete [] texCoords;
+	delete [] normals;
+	delete [] avergeNormals;
 }
 
 //interpolate between two values
@@ -359,15 +362,12 @@ void Terrain::calculateNormal(sf::Vector3f a, sf::Vector3f b, int index){
 	normals[index][0] = (a.y * b.z) - (a.z * b.y);
 	normals[index][1] = (a.z * b.x) - (a.x * b.z);
 	normals[index][2] = (a.x * b.y) - (a.y * b.x);
-
 }
 
-sf::Vector3f Terrain::calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c){
-	sf::Vector3f d;
-	d.x = (a.x + b.x + c.x) / 3.0f;
-	d.y = (a.y + b.y + c.y) / 3.0f;
-	d.z = (a.z + b.z + c.z) / 3.0f;
-	return d;
+void Terrain::calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c, int index){
+	avergeNormals[index][0] = (a.x + b.x + c.x) / 3.0f;
+	avergeNormals[index][1] = (a.y + b.y + c.y) / 3.0f;
+	avergeNormals[index][2] = (a.z + b.z + c.z) / 3.0f;
 }
 
 void Terrain::Init(){
@@ -380,7 +380,8 @@ void Terrain::Init(){
 	texCoords = new vector3[numVerts];
 	delete[] normals;
 	normals = new vector3[numVerts];
-
+	delete[] avergeNormals;
+	avergeNormals = new vector3[numVerts / 3];
 
 	//If we're empty try to load
 	if (heightMaps.empty())
@@ -391,7 +392,7 @@ void Terrain::Init(){
 	float xT = 0;
 	float yT = 0;
 	//interpolate along the edges to generate interior points
-	for (int i = 0; i < gridWidth - 1; i++) //iterate left to right
+	for (int index = 0, int i = 0; i < gridWidth - 1; i++) //iterate left to right
 	{
 		for(int j = 0; j < gridDepth - 1; j++)//iterate front to back
 		{
@@ -421,22 +422,26 @@ void Terrain::Init(){
 			//side a
 			setVert(vertexNum, left, getHeight(left, front), front);
 			setCol(vertexNum, 255, 0, 0);
-			//calulate normal wit num and num + 1
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
 			//side b
 			setVert(vertexNum, right, getHeight(right, front), front);
 			setCol(vertexNum, 0, 255, 0);
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
 			//side c
 			setVert(vertexNum, right, getHeight(right, back), back);
 			setCol(vertexNum, 0, 0, 255);
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
+			//calculate normals for triangle
+			calculateAvergeNormalOf3Normals(sf::Vector3f(normals[vertexNum - 3][0], normals[vertexNum][1], normals[vertexNum][2]),
+				sf::Vector3f(normals[vertexNum + 1][0], normals[vertexNum + 1][1], normals[vertexNum + 1][2]),
+				sf::Vector3f(normals[vertexNum + 2][0], normals[vertexNum + 2][1], normals[ivertexNum + 2][2]),
+				index);
 
 			//declare a degenerate triangle
 			//TODO: fix this to draw the correct triangle
@@ -446,21 +451,27 @@ void Terrain::Init(){
 			setVert(vertexNum, right, getHeight(right, back), back);
 			setCol(vertexNum, 0, 255, 255);
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
 			//side b
 			setVert(vertexNum, left, getHeight(left, back), back);
 			setCol(vertexNum, 255, 0, 255);
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
 			//side c
 			setVert(vertexNum, left, getHeight(left, front), front);
 			setCol(vertexNum, 255, 255, 0);
 			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum][2]), vertexNum);
+				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
 			vertexNum++;
 		}
+	}
+	for (int i = 0; i < numVerts / 3; i++){
+		calculateAvergeNormalOf3Normals(sf::Vector3f(normals[i][0], normals[i][1], normals[i][2]),
+			sf::Vector3f(normals[i+1][0], normals[i+1][1], normals[i+1][2]),
+			sf::Vector3f(normals[i+2][0], normals[i+2][1], normals[i+2][2]),
+			i);
 	}
 
 
