@@ -21,3 +21,17 @@ void main()
 	
 	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;//Transformation
 }
+
+/*
+
+C++ = GL
+
+glColor3fv() = gl_Color;
+
+glNormal3fv() = gl_Normal;
+
+glTexCoord2fv() = gl_MultiTexCoord0; //gl_MultiTexCoord always has 4 values so use [0] and [1] as u and v
+
+glVertex3fv() = gl_Vertex;
+
+*/
