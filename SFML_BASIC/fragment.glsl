@@ -9,6 +9,7 @@ varying vec2 texv;
 
 void main()
 {
+	//modulate the colour based on vertex height
 	if (!normals)
 	{
 		float h = (vertheight / maxheight) * (100 / 1); //h is vertheight as a percentage of maxheight
@@ -52,6 +53,7 @@ void main()
 			gl_FragColor = prp;
 		}
 
+		//Set colour rgb to (u, v, 0) from texture coord
 		gl_FragColor = vec4(texv, 0, 1);
 	}
 

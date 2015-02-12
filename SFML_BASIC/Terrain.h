@@ -58,6 +58,7 @@ class Terrain
 
 	bool drawSolid = true;
 	bool drawNormals = false;
+	bool drawTexCoords = false;
 
 public:
 	int hMax;
@@ -82,5 +83,6 @@ public:
 
 	void Init();
 	void Draw();
+	void Draw(sf::Shader *);
 };
 

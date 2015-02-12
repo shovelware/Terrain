@@ -75,8 +75,9 @@ void Terrain::setTex(int index, float u, float v)
 //Sets a texture coordinate based on the normalised x and z of a vertex
 void Terrain::setTexFromVert(int texIndex, int vertIndex)
 {
-	float u = normalisePos(vertices[vertIndex][0], terrWidth);
-	float v = normalisePos(vertices[vertIndex][2], terrDepth);
+	float u = normalisePos(vertices[vertIndex][0] + 25, terrWidth);
+	float v = normalisePos(vertices[vertIndex][2] + 25, terrDepth);
+
 	setTex(texIndex, u, v);
 }
 
@@ -363,13 +364,11 @@ void Terrain::prevMap()
 	}
 }
 
-
 //Sets the shader variable to be the passed shader
 void Terrain::setShader(sf::Shader * inshader)
 {
 	shader = inshader;
 }
-
 
 void Terrain::checkInputKB(sf::Keyboard k)
 {
@@ -560,15 +559,53 @@ void Terrain::Init(){
 	}
 }
 
+
 void Terrain::Draw(){
+	if (drawSolid)
+		glBegin(GL_TRIANGLES);
+
+	else glBegin(GL_LINES);
+
+	//Once we have access to the shader do this in here
+	//shader->setParameter("normals", false);
+	//shader->setParameter("maxheight", hMax);
+
+	//Drawing terrain
+	for (int i = 0; i < numVerts; ++i)
+	{
+		glColor3fv(colors[i]);
+		glNormal3fv(normals[i]);
+		glTexCoord2fv(texCoords[i]);
+		//Do color and normal first since position "finishes" a vertex
+		glVertex3fv(vertices[i]);
+	}
+	glEnd();
+
+	//Drawing normals
+	if (drawNormals)
+	{
+		glBegin(GL_LINES);
+
+		glColor3f(1, 0, 0);
+		for (int i = 0; i < numVerts; ++i)
+		{
+			glVertex3fv(vertices[i]);
+			vector3 vertPlusNorm = { vertices[i][0] + normals[i][0], vertices[i][1] + normals[i][1], vertices[i][2] + normals[i][2] };
+			glVertex3fv(vertPlusNorm);
+		}
+		glEnd();
+	}
+}
+
+void Terrain::Draw(sf::Shader * shdr){
 	if (drawSolid)
 		glBegin(GL_TRIANGLES);
 	
 	else glBegin(GL_LINES);
 	
 	//Once we have access to the shader do this in here
-	//shader->setParameter("normals", false);
-	//shader->setParameter("maxheight", hMax);
+	shdr->setParameter("normals", false);
+	shdr->setParameter("maxheight", hMax);
 
 	//Drawing terrain
 	for(int i = 0 ; i < numVerts ; ++i)
@@ -581,6 +618,7 @@ void Terrain::Draw(){
 	}
 	glEnd();
 
+	shdr->setParameter("normals", true);
 	//Drawing normals
 	if (drawNormals)
 	{

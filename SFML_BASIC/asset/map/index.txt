@@ -1,4 +1,8 @@
-//default map
+//flatlands high and low
+map1flat
+map1hi
+
+//tiny map
 map10
 
 //figuring out orientation
