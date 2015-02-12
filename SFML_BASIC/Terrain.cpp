@@ -19,6 +19,7 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
 	 numVerts = gridDepth * gridWidth * 2 * 3;
+	 std::cout << "Num verts: " << numVerts << std::endl;
 
 	 //Avg. of width and depth
 	 hAdjust = (gridWidth + gridDepth) / 2;
@@ -80,7 +81,9 @@ void Terrain::setTex(int index, float u, float v)
 //Sets a texture coordinate based on the normalised x and z of a vertex
 void Terrain::setTexFromVert(int texIndex, int vertIndex)
 {
-	setTex(texIndex, normalisePos(vertices[vertIndex][0], terrWidth), normalisePos(vertices[vertIndex][2], terrDepth));
+	float u = normalisePos(vertices[vertIndex][0], terrWidth);
+	float v = normalisePos(vertices[vertIndex][2], terrDepth);
+	setTex(texIndex, u, v);
 }
 
 //Convert a GL vector3 to sf::Vector3f
@@ -145,7 +148,7 @@ float Terrain::heightMapLookup(float x,  float y)
 		|| x < 0 || x > 1
 		|| y < 0 || y > 1))
 	{
-		sf::Image &hm = (*currentHeightMap);
+		sf::Image &hm = (currentHeightMap->first);
 
 		unsigned int mapWidth = hm.getSize().x;
 		unsigned int mapHeight = hm.getSize().y;
@@ -306,7 +309,7 @@ bool Terrain::crementIter(int direction)
 
 //PUBLIC FUNCTIONS BELOW//
 
-void Terrain::LoadImages(string indexfile)
+void Terrain::loadImages(string indexfile)
 {
 	std::cout << "Loading images:" << endl;
 	string c;
@@ -315,22 +318,36 @@ void Terrain::LoadImages(string indexfile)
 	sf::Image temp;
 	
 	myfile.open(mapbasepath + indexfile);
-	while (myfile >> c) 
+	while (std::getline(myfile, c)) 
 	{
-		if (c != "" && (c[0] != '//' && c[1] != '//'))
+		if (c != "")
 		{
-			if (!temp.loadFromFile(mapbasepath + c + ".png"))
+			//Output file comments
+			if (c[0] == '/' && c[1] == '/')
 			{
-				heightMaps.push_back(temp);
+				cout << endl << '\t' << c << endl;
 				continue;
 			}
+
+			//Load map
+			if (!temp.loadFromFile(mapbasepath + c + ".png"))
+			{
+				heightMaps.push_back(make_pair(temp, c));
+				continue;
+			}
+
 			std::cout << "\t" << c << endl;
-			heightMaps.push_back(temp);
+			heightMaps.push_back(make_pair(temp, c));
 		}
 	}
 	myfile.close();
 
 	currentHeightMap = heightMaps.begin();
+}
+
+void Terrain::heightMapOutput()
+{
+	cout << "Current: " << currentHeightMap->second << endl;
 }
 
 //Moves to the next map and reloads
@@ -358,6 +375,7 @@ void Terrain::checkInputKB(sf::Keyboard k)
 	static bool kPeriod;
 	static bool kI;
 	static bool kN;
+	static bool kM;
 
 	//< : Previous Map
 	if (k.isKeyPressed(k.Comma))
@@ -381,6 +399,16 @@ void Terrain::checkInputKB(sf::Keyboard k)
 
 	else kPeriod = false;
 
+	//M : Output Map Name
+	if (k.isKeyPressed(k.M))
+	{
+		if (!kM)
+			heightMapOutput();
+
+		kM = true;
+	}
+
+	else kM = false;
 
 	//I : Toggle wireframe
 	if (k.isKeyPressed(k.I))
@@ -442,7 +470,7 @@ void Terrain::Init(){
 	//If we're empty try to load
 	if (heightMaps.empty())
 	{
-		LoadImages(index);
+		loadImages(index);
 	}
 
 	float xT = 0;
@@ -521,15 +549,13 @@ void Terrain::Init(){
 			vertexNum++;
 		}
 	}
+
 	for (int i = 0; i < numVerts / 3; i++){
 		calculateAvergeNormalOf3Normals(sf::Vector3f(normals[i][0], normals[i][1], normals[i][2]),
 			sf::Vector3f(normals[i+1][0], normals[i+1][1], normals[i+1][2]),
 			sf::Vector3f(normals[i+2][0], normals[i+2][1], normals[i+2][2]),
 			i);
 	}
-
-
-	std::cout << "num verts: " << numVerts << std::endl;
 }
 
 void Terrain::Draw(){
@@ -538,22 +564,22 @@ void Terrain::Draw(){
 	
 	else glBegin(GL_LINES);
 	
-
+	//Once we have access to the shader do this in here
 	//shader->setParameter("normals", false);
 	//shader->setParameter("maxheight", hMax);
 
+	//Drawing terrain
 	for(int i = 0 ; i < numVerts ; ++i)
 	{
 			glColor3fv(colors[i]);
 			glNormal3fv(normals[i]);
 			glTexCoord2fv(texCoords[i]);
-			//Do color and normal before position since position "finishes" a vertex
+			//Do color and normal first since position "finishes" a vertex
 			glVertex3fv(vertices[i]);
 	}
 	glEnd();
 
-
-	//Drawing number loop
+	//Drawing normals
 	if (drawNormals)
 	{
 		glBegin(GL_LINES);

@@ -1,14 +1,18 @@
+//default map
 map10
 
+//figuring out orientation
 map10centre
 map10topleft
 map100topleft
 
+//sphere maps of varying resolution
 map500sphere
 map200sphere
 map100sphere
 map10sphere
 
+//fun maps
 map200cloud
 map200island
 map200swirl

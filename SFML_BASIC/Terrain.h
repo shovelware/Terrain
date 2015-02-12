@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+using std::pair;
 using sf::Vector2f;
 
 class Terrain
@@ -21,8 +22,6 @@ class Terrain
 	vector3 *avergeNormals;
 	vector3 *colors;
 	vector2 *texCoords;
-
-	std::vector<sf::Vector2f>texCo;
 	
 	sf::Shader * shader;
 
@@ -45,8 +44,8 @@ class Terrain
 	GLfloat* SFtoGL(sf::Vector3f);
 	sf::Vector3f GLtoSF(vector3);
 
-	vector<sf::Image> heightMaps;
-	vector<sf::Image>::iterator currentHeightMap;
+	vector<pair<sf::Image, string>> heightMaps;
+	vector<pair<sf::Image, string>>::iterator currentHeightMap;
 	bool crementIter(int direction);
 
 	enum process { AVERAGE = 0, ADD = 1, EXTADD, ENUMCOUNT };
@@ -69,8 +68,9 @@ public:
 
 	void setShader(sf::Shader *);
 
-	void LoadImages(string filepath);
+	void loadImages(string filepath);
 
+	void heightMapOutput();
 	void nextMap();
 	void prevMap();
 

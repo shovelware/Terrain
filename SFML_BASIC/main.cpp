@@ -34,10 +34,12 @@ int main()
     // Create the main window 
     
     int width=600,height=600;
+
+	//sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL", 7U, sf::ContextSettings(0U, 0U, 8U, 2U, 0U)); //ANTIALIASING
 	sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL");
 	sf::ContextSettings settings = window.getSettings();
 	std::cout << "OpenGL version: " << settings.majorVersion << "." << settings.minorVersion << std::endl;
-	//sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL", 7U, sf::ContextSettings(0U, 0U, 8U, 2U, 0U)); //ANTIALIASING
+
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 
@@ -62,19 +64,22 @@ int main()
 	//set up a  orthographic projection same size as window
 	//this means the vertex coordinates are in pixel space
 	//glOrtho(0, 800, 0, 600, 0, 1); // use pixel coordinates
- 
+
 	//load & bind the shader
 	sf::Shader shader;
-	//all the lighting & texture blending code should  be put in 'fragment.glsl'
-	if(!shader.loadFromFile("vertex.glsl", "fragment.glsl")){
-        exit(1);
-    }
-	sf::Shader::bind(&shader);
 
 	//Create our Terrain
 	Terrain terrain;
 	terrain.Init();
 	terrain.setShader(&shader);
+
+	//all the lighting & texture blending code should  be put in 'fragment.glsl'
+	if(!shader.loadFromFile("vertex.glsl", "fragment.glsl")){
+        exit(1);
+    }
+
+	sf::Shader::bind(&shader);
+
 
     // Start game loop 
     while (window.isOpen()) 
