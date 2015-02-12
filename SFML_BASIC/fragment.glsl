@@ -52,7 +52,7 @@ void main()
 			gl_FragColor = prp;
 		}
 
-		//gl_FragColor = vec4(gl_TexCoord[0], gl_TexCoord[1], 0, 1);
+		gl_FragColor = vec4(texv, 0, 1);
 	}
 
 }

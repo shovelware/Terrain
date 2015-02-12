@@ -65,12 +65,6 @@ void Terrain::setCol(int index, float r, float g, float b)
 	colors[index][2] = b <= 255 ? b : 255;
 }
 
-//Sets the shader variable to be the passed shader
-void Terrain::setShader(sf::Shader * inshader)
-{
-	shader = inshader;
-}
-
 //Sets a texture coordinate (Likes 0 < value < 1 but can deal with others)
 void Terrain::setTex(int index, float u, float v)
 {
@@ -308,7 +302,6 @@ bool Terrain::crementIter(int direction)
 }
 
 //PUBLIC FUNCTIONS BELOW//
-
 void Terrain::loadImages(string indexfile)
 {
 	std::cout << "Loading images:" << endl;
@@ -345,6 +338,7 @@ void Terrain::loadImages(string indexfile)
 	currentHeightMap = heightMaps.begin();
 }
 
+//Outputs name of current heightmap
 void Terrain::heightMapOutput()
 {
 	cout << "Current: " << currentHeightMap->second << endl;
@@ -368,6 +362,14 @@ void Terrain::prevMap()
 		Init();
 	}
 }
+
+
+//Sets the shader variable to be the passed shader
+void Terrain::setShader(sf::Shader * inshader)
+{
+	shader = inshader;
+}
+
 
 void Terrain::checkInputKB(sf::Keyboard k)
 {

@@ -17,8 +17,7 @@ void main()
 	gl_FrontColor = gl_Color; //pass the colour along to the next phase (fragment shader)
 
 	//Pass texture along
-	//texv(glTexCoord2d[0][0], gl_TexCoord[0][1]);
+	texv = vec2(gl_MultiTexCoord0[0], gl_MultiTexCoord0[1]);
 	
-
 	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;//Transformation
 }
