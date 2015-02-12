@@ -34,7 +34,9 @@ int main()
     // Create the main window 
     
     int width=600,height=600;
-	sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL"); 
+	sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL");
+	sf::ContextSettings settings = window.getSettings();
+	std::cout << "OpenGL version: " << settings.majorVersion << "." << settings.minorVersion << std::endl;
 	//sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL", 7U, sf::ContextSettings(0U, 0U, 8U, 2U, 0U)); //ANTIALIASING
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
@@ -115,6 +117,7 @@ int main()
 		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		//draw the world
+		shader.setParameter("maxheight", terrain.hMax);
 		terrain.Draw();
 
 		   

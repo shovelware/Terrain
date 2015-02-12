@@ -18,6 +18,8 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.
 
 	 //Avg. of width and depth
 	 hAdjust = (gridWidth + gridDepth) / 2;
+
+	 hMax = heightProcess(colorProcess(sf::Color::White));
 }
 
 Terrain::~Terrain(void)
@@ -58,15 +60,6 @@ void Terrain::setCol(int index, float r, float g, float b)
 	colors[index][2] = b <= 255 ? b : 255;
 }
 
-//Sets a random colour given an index and minimum values for r, g and b
-void Terrain::setColRand(int index, float minR, float minG, float minB)
-{
-	//[num] = rand() % [range + 1] + [min];
-	colors[index][0] = rand() % 256 + minR;
-	colors[index][1] = rand() % 256 + minG;
-	colors[index][2] = rand() % 256 + minB;
-}
-
 //Sets a texture coordinate (Likes 0 < value < 1 but can deal with others)
 void Terrain::setTex(int index, float u, float v)
 {
@@ -77,8 +70,7 @@ void Terrain::setTex(int index, float u, float v)
 //Sets a texture coordinate based on the normalised x and z of a vertex
 void Terrain::setTexFromVert(int texIndex, int vertIndex)
 {
-	texCoords[texIndex][0] = normalisePos(vertices[vertIndex][0], terrWidth);
-	texCoords[texIndex][1] = normalisePos(vertices[vertIndex][2], terrDepth);
+	setTex(texIndex, normalisePos(vertices[vertIndex][0], terrWidth), normalisePos(vertices[vertIndex][2], terrDepth));
 }
 
 //Convert a GL vector3 to sf::Vector3f
@@ -195,22 +187,22 @@ float Terrain::heightProcess(float h)
 	{
 		//Average of rgb values, works for greyscale too.
 	case AVERAGE:
-		return h / hAdjust;// / (h / hAdjust);
+		return h / hAdjust;
 		break;
 
 		//Addition of rgb values, straight up.
 	case ADD:
-		return h;
+		return h / hAdjust;
 		break;
 
 		//Extended range addition, for more values
 	case EXTADD:
-		return h;
+		return h / hAdjust;
 		break;
 
 		//Defaults to average
 	default:
-		return h;
+		return h / hAdjust;
 		break;
 	}
 }
@@ -538,18 +530,17 @@ void Terrain::Draw(){
 			glColor3fv(colors[i]);
 			glNormal3fv(normals[i]);
 			glTexCoord2fv(texCoords[i]);
-
+			//Do color and normal before position since position "finishes" a vertex
 			glVertex3fv(vertices[i]);
-			//this will do some of the grid(technically all). lerp fucks it up(apparently)
-			//lerp throws the position off. somehow need vertices before lerp
 	}
 	glEnd();
 
+	//Drawing number loop
 	if (drawNormals)
 	{
 		glBegin(GL_LINES);
 				
-		glColor3fv(SFtoGL(sf::Vector3f(0.2, 0.1, 0.5)));
+		glColor3f(1, 0, 0);
 			for (int i = 0; i < numVerts; ++i)
 			{
 				glVertex3fv(vertices[i]);
