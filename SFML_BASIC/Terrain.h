@@ -37,7 +37,6 @@ class Terrain
 	void setVert(int, float, float, float);
 	void setNorm(int, float, float, float);
 	void setCol(int, float, float, float);
-	void setColRand(int, float, float, float);
 	void setTex(int, float, float);
 	void setTexFromVert(int, int);
 	GLfloat* SFtoGL(sf::Vector3f);
@@ -63,6 +62,7 @@ public:
 	~Terrain(void);
 
 	string index;
+	int hMax;
 
 	void LoadImages(string filepath);
 
