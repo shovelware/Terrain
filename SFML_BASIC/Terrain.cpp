@@ -3,20 +3,18 @@
 
 Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.1)
 {
-	gridWidth=25; //squares in grid
-	gridDepth=25;
-
-	terrWidth=25; //size of terrain in world units
-	terrDepth=25;
-
-	vertices=NULL;
+	gridWidth = 50; //squares in grid
+	gridDepth = 50;
+	terrWidth = 25; //size of terrain in world units
+	terrDepth = 25;
+	vertices = NULL;
 	normals = NULL;
 	avergeNormals = NULL;
-	colors=NULL;	
+	colors = NULL;	
 	texCoords = NULL;
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
-	 numVerts=gridDepth * gridWidth * 2 * 3;
+	 numVerts = gridDepth * gridWidth * 2 * 3;
 
 	 //Avg. of width and depth
 	 hAdjust = (gridWidth + gridDepth) / 2;
@@ -25,9 +23,9 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(AVERAGE), hAdjust(0.
 Terrain::~Terrain(void)
 {
 	delete [] vertices;
+	delete [] normals;
 	delete [] colors;
 	delete [] texCoords;
-	delete [] normals;
 	delete [] avergeNormals;
 }
 
@@ -44,6 +42,14 @@ void Terrain::setVert(int index, float x, float y, float z)
 	vertices[index][2] = z;
 };
 
+//Set normal given an index (Likes 0 < value < 1 but can deal with others)
+void Terrain::setNorm(int index, float x, float y, float z)
+{
+	normals[index][0] = (0 < x && x < 1) ? x : 0;
+	normals[index][1] = (0 < y && y < 1) ? y : 0;
+	normals[index][2] = (0 < z && z < 1) ? z : 0;
+}
+
 //Sets colour given an index and rgb (Safe for >255 values)
 void Terrain::setCol(int index, float r, float g, float b)
 {
@@ -52,6 +58,7 @@ void Terrain::setCol(int index, float r, float g, float b)
 	colors[index][2] = b <= 255 ? b : 255;
 }
 
+//Sets a random colour given an index and minimum values for r, g and b
 void Terrain::setColRand(int index, float minR, float minG, float minB)
 {
 	//[num] = rand() % [range + 1] + [min];
@@ -60,12 +67,35 @@ void Terrain::setColRand(int index, float minR, float minG, float minB)
 	colors[index][2] = rand() % 256 + minB;
 }
 
-//Set normal given an index (Safe for > 1 values)
-void Terrain::setNorm(int index, float x, float y, float z)
+//Sets a texture coordinate (Likes 0 < value < 1 but can deal with others)
+void Terrain::setTex(int index, float u, float v)
 {
-	normals[index][0] = (0 < x && x < 1) ? x : 0;
-	normals[index][1] = (0 < y && y < 1) ? y : 0;
-	normals[index][2] = (0 < z && z < 1) ? z : 0;
+	texCoords[index][0] = (0 < u && u < 1) ? u : 0;
+	texCoords[index][1] = (0 < v && v < 1) ? v : 0;
+}
+
+//Sets a texture coordinate based on the normalised x and z of a vertex
+void Terrain::setTexFromVert(int texIndex, int vertIndex)
+{
+	texCoords[texIndex][0] = normalisePos(vertices[vertIndex][0], terrWidth);
+	texCoords[texIndex][1] = normalisePos(vertices[vertIndex][2], terrDepth);
+}
+
+//Convert a GL vector3 to sf::Vector3f
+sf::Vector3f Terrain::GLtoSF(vector3 vector)
+{
+	return sf::Vector3f(vector[0], vector[1], vector[2]);
+}
+
+//Convert a sf::Vector3f to GL vector3
+GLfloat* Terrain::SFtoGL(sf::Vector3f vector)
+{
+	vector3 ret;
+	ret[0] = vector.x;
+	ret[1] = vector.y;
+	ret[2] = vector.z;
+
+	return ret;
 }
 
 //Wrapper function for vector2f support (max is maximum x,  maximum y)
@@ -282,10 +312,10 @@ void Terrain::LoadImages(string indexfile)
 
 	sf::Image temp;
 	
-	myfile.open(basepath + indexfile);
+	myfile.open(mapbasepath + indexfile);
 	while (myfile >> c) 
 	{
-		if (!temp.loadFromFile(basepath + c))
+		if (!temp.loadFromFile(mapbasepath + c))
 		{
 			heightMaps.push_back(temp);
 			continue;
@@ -322,6 +352,7 @@ void Terrain::checkInputKB(sf::Keyboard k)
 	static bool kComma;
 	static bool kPeriod;
 	static bool kI;
+	static bool kN;
 
 	//< : Previous Map
 	if (k.isKeyPressed(k.Comma))
@@ -350,18 +381,34 @@ void Terrain::checkInputKB(sf::Keyboard k)
 	if (k.isKeyPressed(k.I))
 	{
 		if (!kI)
-			solid = !solid;
+			drawSolid = !drawSolid;
 
 		kI = true;
 	}
 
 	else kI = false;
+
+	//N : Toggle normals
+	if (k.isKeyPressed(k.N))
+	{
+		if (!kN)
+			drawNormals = !drawNormals;
+
+		kN = true;
+	}
+
+	else kN = false;
 }
 
 void Terrain::calculateNormal(sf::Vector3f a, sf::Vector3f b, int index){
 	normals[index][0] = (a.y * b.z) - (a.z * b.y);
 	normals[index][1] = (a.z * b.x) - (a.x * b.z);
 	normals[index][2] = (a.x * b.y) - (a.y * b.x);
+	//distance formula
+	float len = sqrt(pow(normals[index][0] - 0, 2) + pow(normals[index][1] - 0, 2) + pow(normals[index][2] - 0, 2));
+	normals[index][0] /= len;
+	normals[index][1] /= len;
+	normals[index][2] /= len;
 }
 
 void Terrain::calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf::Vector3f c, int index){
@@ -373,15 +420,19 @@ void Terrain::calculateAvergeNormalOf3Normals(sf::Vector3f a, sf::Vector3f b, sf
 void Terrain::Init(){
 	
 	delete [] vertices;//just in case we've called init before
-	vertices=new vector3[numVerts];
-	delete [] colors;
-	colors=new vector3[numVerts];
-	delete[] texCoords;
-	texCoords = new vector3[numVerts];
+	vertices = new vector3[numVerts];
+
 	delete[] normals;
 	normals = new vector3[numVerts];
+
 	delete[] avergeNormals;
 	avergeNormals = new vector3[numVerts / 3];
+
+	delete [] colors;
+	colors=new vector3[numVerts];
+
+	delete[] texCoords;
+	texCoords = new vector2[numVerts];
 
 	//If we're empty try to load
 	if (heightMaps.empty())
@@ -392,7 +443,7 @@ void Terrain::Init(){
 	float xT = 0;
 	float yT = 0;
 	//interpolate along the edges to generate interior points
-	for (int index = 0, int i = 0; i < gridWidth - 1; i++) //iterate left to right
+	for (int index = 0, i = 0; i < gridWidth - 1; i++) //iterate left to right
 	{
 		for(int j = 0; j < gridDepth - 1; j++)//iterate front to back
 		{
@@ -405,7 +456,7 @@ void Terrain::Init(){
 			float left = lerp(-terrWidth / 2, terrWidth / 2, (float)i / gridWidth);
 			float right = lerp(-terrWidth / 2, terrWidth / 2, (float)(i + 1) / gridWidth);
 			
-			/*
+			/* rotate 90deg CW to be 
 			back  + ----- + 	looking from above,  the grid is made up of regular squares
 			       |tri2/|	'left & 'right' are the x cooded of the edges of the square
 				   |   / |	'back' & 'front' are the y coords of the square
@@ -421,49 +472,47 @@ void Terrain::Init(){
 			//tri1
 			//side a
 			setVert(vertexNum, left, getHeight(left, front), front);
-			setCol(vertexNum, 255, 0, 0);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+
+			setCol(vertexNum, 255, 255, 255);
+			setTexFromVert(vertexNum, vertexNum);
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
-			//side b
+			
 			setVert(vertexNum, right, getHeight(right, front), front);
-			setCol(vertexNum, 0, 255, 0);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+			setCol(vertexNum, 255, 255, 255);
+			setTexFromVert(vertexNum, vertexNum);
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
-			//side c
+			
 			setVert(vertexNum, right, getHeight(right, back), back);
-			setCol(vertexNum, 0, 0, 255);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+			setCol(vertexNum, 255, 255, 255);
+			setTexFromVert(vertexNum, vertexNum);
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
 			//calculate normals for triangle
 			calculateAvergeNormalOf3Normals(sf::Vector3f(normals[vertexNum - 3][0], normals[vertexNum][1], normals[vertexNum][2]),
 				sf::Vector3f(normals[vertexNum + 1][0], normals[vertexNum + 1][1], normals[vertexNum + 1][2]),
-				sf::Vector3f(normals[vertexNum + 2][0], normals[vertexNum + 2][1], normals[ivertexNum + 2][2]),
+				sf::Vector3f(normals[vertexNum + 2][0], normals[vertexNum + 2][1], normals[vertexNum + 2][2]),
 				index);
-
-			//declare a degenerate triangle
-			//TODO: fix this to draw the correct triangle
 
 			//tri2
 			//side a
 			setVert(vertexNum, right, getHeight(right, back), back);
-			setCol(vertexNum, 0, 255, 255);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+			setCol(vertexNum, 0, 0, 0);
+			setTexFromVert(vertexNum, vertexNum);
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
-			//side b
+			
 			setVert(vertexNum, left, getHeight(left, back), back);
-			setCol(vertexNum, 255, 0, 255);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+			setCol(vertexNum, 0, 0, 0);
+			setTexFromVert(vertexNum, vertexNum);			
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
-			//side c
+			
 			setVert(vertexNum, left, getHeight(left, front), front);
-			setCol(vertexNum, 255, 255, 0);
-			calculateNormal(sf::Vector3f(vertices[vertexNum][0], vertices[vertexNum][1], vertices[vertexNum][2]),
-				sf::Vector3f(vertices[vertexNum + 1][0], vertices[vertexNum + 1][1], vertices[vertexNum+1][2]), vertexNum);
+			setCol(vertexNum, 0, 0, 0);
+			setTexFromVert(vertexNum, vertexNum);
+			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);
 			vertexNum++;
 		}
 	}
@@ -479,7 +528,7 @@ void Terrain::Init(){
 }
 
 void Terrain::Draw(){
-	if (solid)
+	if (drawSolid)
 		glBegin(GL_TRIANGLES);
 	
 	else glBegin(GL_LINES);
@@ -487,10 +536,25 @@ void Terrain::Draw(){
 	for(int i = 0 ; i < numVerts ; ++i)
 	{
 			glColor3fv(colors[i]);
+			glNormal3fv(normals[i]);
+			glTexCoord2fv(texCoords[i]);
+
 			glVertex3fv(vertices[i]);
-			glTexCoord2d(vertices[i][0]/gridWidth, vertices[i][2]/gridDepth);//this will do some of the grid(technically all). lerp fucks it up(apparently)
+			//this will do some of the grid(technically all). lerp fucks it up(apparently)
 			//lerp throws the position off. somehow need vertices before lerp
 	}
-
 	glEnd();
+
+	if (drawNormals)
+	{
+		glBegin(GL_LINES);
+				
+		glColor3fv(SFtoGL(sf::Vector3f(0.2, 0.1, 0.5)));
+			for (int i = 0; i < numVerts; ++i)
+			{
+				glVertex3fv(vertices[i]);
+				glVertex3fv(*vertices[i] + *normals[i]);
+			}
+		glEnd();
+	}
 }

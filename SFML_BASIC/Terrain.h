@@ -11,14 +11,17 @@ class Terrain
 	//size of the terrain in world_coords
 	float terrWidth, terrDepth;
 
-	typedef  GLfloat vector3[3];
+	typedef GLfloat vector3[3];
+	typedef GLfloat vector2[2];
 	//array of vertices for the grid(this will be a triangle list)
 	//I know, very inefficient, but let's run before we walk
+
 	vector3 *vertices;
 	vector3 *normals;
 	vector3 *avergeNormals;
 	vector3 *colors;
-	vector3 *texCoords;
+	vector2 *texCoords;
+
 	std::vector<sf::Vector2f>texCo;
 	
 	bool loadImage();
@@ -35,14 +38,15 @@ class Terrain
 	void setVert(int, float, float, float);
 	void setNorm(int, float, float, float);
 	void setCol(int, float, float, float);
-
 	void setColRand(int, float, float, float);
-
+	void setTex(int, float, float);
+	void setTexFromVert(int, int);
+	GLfloat* SFtoGL(sf::Vector3f);
+	sf::Vector3f GLtoSF(vector3);
 
 	vector<sf::Image> heightMaps;
 	vector<sf::Image>::iterator currentHeightMap;
 	bool crementIter(int direction);
-
 
 	enum process { AVERAGE = 0, ADD = 1, EXTADD, ENUMCOUNT };
 	int currentProcess;
@@ -52,7 +56,8 @@ class Terrain
 
 	int hAdjust;
 
-	bool solid;
+	bool drawSolid = true;
+	bool drawNormals = false;
 
 public:
 	Terrain(void);
