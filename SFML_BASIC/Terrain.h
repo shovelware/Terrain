@@ -55,13 +55,12 @@ class Terrain
 	float heightProcess(float h);
 
 	int hAdjust;
+	int hMax;
 
 	bool drawSolid = true;
 	bool drawNormals = false;
-	bool drawTexCoords = false;
 
 public:
-	int hMax;
 	Terrain(void);
 	~Terrain(void);
 
@@ -84,5 +83,7 @@ public:
 	void Init();
 	void Draw();
 	void Draw(sf::Shader *);
+	void DrawTerrain(sf::Shader *);
+	void DrawNormals(sf::Shader *);
 };
 

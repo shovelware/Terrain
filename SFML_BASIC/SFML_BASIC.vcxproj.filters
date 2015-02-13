@@ -13,14 +13,41 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{4c747d59-075b-4c0b-92ae-41f091276976}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="vertex.glsl">
-      <Filter>Source Files</Filter>
+    <None Include="shader\colmod.frag">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="fragment.glsl">
-      <Filter>Source Files</Filter>
+    <None Include="shader\colmod.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\norm.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\norm.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\plain.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\plain.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\texmap.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\texmap.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\texture.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shader\texture.vert">
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

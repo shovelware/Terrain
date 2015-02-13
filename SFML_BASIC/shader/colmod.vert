@@ -1,7 +1,8 @@
+#version 120
+//Modulates colour by y height of vertex
+
 varying float vertheight;
 uniform float maxheight;
-
-uniform bool normals;
 
 void main()
 {

@@ -19,7 +19,7 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 	//num squares in grid will be width*height,  two triangles per square
 	//3 verts per triangle
 	 numVerts = gridDepth * gridWidth * 2 * 3;
-	 std::cout << "Num verts: " << numVerts << std::endl;
+	 std::cout << "Num verts: " << numVerts << std::endl << std::endl;
 
 	 //Avg. of width and depth
 	 hAdjust = (gridWidth + gridDepth) / 2;
@@ -438,6 +438,7 @@ void Terrain::calculateNormal(sf::Vector3f a, sf::Vector3f b, int index){
 	normals[index][0] = (a.y * b.z) - (a.z * b.y);
 	normals[index][1] = (a.z * b.x) - (a.x * b.z);
 	normals[index][2] = (a.x * b.y) - (a.y * b.x);
+
 	//distance formula
 	float len = sqrt(pow(normals[index][0] - 0, 2) + pow(normals[index][1] - 0, 2) + pow(normals[index][2] - 0, 2));
 	normals[index][0] /= len;
@@ -529,6 +530,7 @@ void Terrain::Init(){
 				sf::Vector3f(normals[vertexNum + 2][0], normals[vertexNum + 2][1], normals[vertexNum + 2][2]),
 				index);
 
+
 			//tri2
 			//side a
 			setVert(vertexNum, right, getHeight(right, back), back);
@@ -558,7 +560,6 @@ void Terrain::Init(){
 			i);
 	}
 }
-
 
 void Terrain::Draw(){
 	if (drawSolid)
@@ -598,6 +599,9 @@ void Terrain::Draw(){
 }
 
 void Terrain::Draw(sf::Shader * shdr){
+
+	sf::Shader::bind(shdr);
+
 	if (drawSolid)
 		glBegin(GL_TRIANGLES);
 	
@@ -619,6 +623,7 @@ void Terrain::Draw(sf::Shader * shdr){
 	glEnd();
 
 	shdr->setParameter("normals", true);
+
 	//Drawing normals
 	if (drawNormals)
 	{
@@ -633,4 +638,50 @@ void Terrain::Draw(sf::Shader * shdr){
 		}
 		glEnd();
 	}
+}
+
+void Terrain::DrawTerrain(sf::Shader * shdr)
+{
+	//Set up shader and parameters
+	sf::Shader::bind(shdr);
+	shdr->setParameter("maxheight", hMax); //Hopefully all shaders we use will need to know maxheight
+
+	if (drawSolid)
+		glBegin(GL_TRIANGLES);
+
+	else glBegin(GL_LINES);
+
+
+	//Drawing terrain
+	for (int i = 0; i < numVerts; ++i)
+	{
+		glColor3fv(colors[i]);
+		glNormal3fv(normals[i]);
+		glTexCoord2fv(texCoords[i]);
+		//Do color and normal first since position "finishes" a vertex
+		glVertex3fv(vertices[i]);
+	}
+	glEnd();
+}
+
+void Terrain::DrawNormals(sf::Shader * shdr)
+{
+	if (!drawNormals)//If we don't want to draw them, drop out
+		return;
+
+	//Set up shader and parameters
+	sf::Shader::bind(shdr);
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i < numVerts; ++i)
+	{
+		glColor3f(0, 0, 0);
+		glVertex3fv(vertices[i]);
+
+		glColor3f(0.3, 0.3, 0.3);
+		vector3 vertPlusNorm = { vertices[i][0] + normals[i][0], vertices[i][1] + normals[i][1], vertices[i][2] + normals[i][2] };
+		glVertex3fv(vertPlusNorm);
+	}
+	glEnd();
 }

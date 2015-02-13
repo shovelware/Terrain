@@ -81,9 +81,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="fragment.glsl" />
     <None Include="ReadMe.txt" />
-    <None Include="vertex.glsl" />
+    <None Include="shader\colmod.frag" />
+    <None Include="shader\colmod.vert" />
+    <None Include="shader\norm.frag" />
+    <None Include="shader\norm.vert" />
+    <None Include="shader\plain.frag" />
+    <None Include="shader\plain.vert" />
+    <None Include="shader\texmap.frag" />
+    <None Include="shader\texmap.vert" />
+    <None Include="shader\texture.frag" />
+    <None Include="shader\texture.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

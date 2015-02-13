@@ -38,7 +38,7 @@ int main()
 	//sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL", 7U, sf::ContextSettings(0U, 0U, 8U, 2U, 0U)); //ANTIALIASING
 	sf::RenderWindow window(sf::VideoMode(width, height, 32), "SFML OpenGL");
 	sf::ContextSettings settings = window.getSettings();
-	std::cout << "OpenGL version: " << settings.majorVersion << "." << settings.minorVersion << std::endl;
+	std::cout << "OpenGL version: " << settings.majorVersion << "." << settings.minorVersion << std::endl << std::endl;
 
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
@@ -55,6 +55,7 @@ int main()
 	else cout << "Failed to load snowyRocks texture" << endl;
 	if (waterTexture.loadFromFile("asset/seaMap.png")){ cout << "water texture loaded successfully" << endl; }
 	else cout << "Failed to load water texture" << endl;
+	cout << endl;
 
 	aiVector3D position(0, 20, -30);
 	aiVector3D zaxis(0, 0, 1); //-z to turn camera around
@@ -72,24 +73,27 @@ int main()
     glLoadIdentity(); 
      
     //set up a 3D Perspective View volume
-    gluPerspective(110.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+    //gluPerspective(110.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
 	//possibly how we do an orthographics perspective?
 	//glOrtho(-200, 200, -200, 200, -200, 200); //left,right,bottom,top,nearVal,farVal
 
-	//load & bind the shader
-	sf::Shader shader;
+	//load the shaders
+	sf::Shader plain;
+	sf::Shader colmod;
+	sf::Shader norm;
+	sf::Shader texmap;
+	sf::Shader texture;
+
+	if (!plain.loadFromFile("shader/plain.vert", "shader/plain.frag")) { exit(1); }
+	if (!colmod.loadFromFile("shader/colmod.vert", "shader/colmod.frag")) { exit(1); }
+	if (!norm.loadFromFile("shader/norm.vert", "shader/norm.frag")) { exit(1); }
+	if (!texmap.loadFromFile("shader/texmap.vert", "shader/texmap.frag")) { exit(1); }
+	if (!texture.loadFromFile("shader/texture.vert", "shader/texture.frag")) { exit(1); }
 
 	//Create our Terrain
 	Terrain terrain;
 	terrain.Init();
-	terrain.setShader(&shader);
 
-	//all the lighting & texture blending code should  be put in 'fragment.glsl'
-	if(!shader.loadFromFile("vertex.glsl", "fragment.glsl")){
-        exit(1);
-    }
-
-	sf::Shader::bind(&shader);
 	bool perspective = true;
 	bool ortho = false;
 
@@ -129,6 +133,7 @@ int main()
 
 			gluPerspective(110.f, (float)width / height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
 		}
+
 		else if (ortho == true && perspective == false)
 		{
 			glMatrixMode(GL_PROJECTION);
@@ -155,7 +160,6 @@ int main()
 		//get the viewing transform from the camera
 		camera.ViewingTransform();
 
-
 		//make the world spin
 		//TODO:probably should remove this in final
 		//static float ang=0.0;
@@ -163,10 +167,9 @@ int main()
 		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		//draw the world
-		shader.setParameter("normals", false);
-		shader.setParameter("maxheight", terrain.hMax);
 		sf::Texture::bind(&waterTexture);
-		terrain.Draw();
+		terrain.DrawTerrain(&texture);
+		terrain.DrawNormals(&plain);
 
         // Finally, display rendered frame on screen 
         window.display(); 
