@@ -61,9 +61,7 @@ int main()
     //set up a 3D Perspective View volume
     gluPerspective(110.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
 	//possibly how we do an orthographics perspective?
-	//set up a  orthographic projection same size as window
-	//this means the vertex coordinates are in pixel space
-	//glOrtho(0, 800, 0, 600, 0, 1); // use pixel coordinates
+	//glOrtho(-200, 200, -200, 200, -200, 200); //left,right,bottom,top,nearVal,farVal
 
 	//load & bind the shader
 	sf::Shader shader;
@@ -79,7 +77,8 @@ int main()
     }
 
 	sf::Shader::bind(&shader);
-
+	bool perspective = true;
+	bool ortho = false;
 
     // Start game loop 
     while (window.isOpen()) 
@@ -96,6 +95,34 @@ int main()
             if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::Escape)) 
                 window.close(); 
         }
+
+		if (keyboard.isKeyPressed(keyboard.O))
+		{
+			ortho = true;
+			perspective = false;
+		}
+
+		if (keyboard.isKeyPressed(keyboard.P))
+		{
+			ortho = false;
+			perspective = true;
+		}
+
+		if (ortho == false && perspective == true)
+		{
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+
+
+			gluPerspective(110.f, (float)width / height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+		}
+		else if (ortho == true && perspective == false)
+		{
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+
+			glOrtho(-200, 200, -200, 200, -200, 200); //left,right,bottom,top,nearVal,farVal
+		}
 
 		//UPDATE
 		//update the camera
