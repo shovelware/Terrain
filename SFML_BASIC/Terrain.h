@@ -84,6 +84,7 @@ public:
 	void Draw();
 	void Draw(sf::Shader *);
 	void DrawTerrain(sf::Shader *);
+	void DrawTerrainTextured(sf::Shader *);
 	void DrawNormals(sf::Shader *);
 };
 
