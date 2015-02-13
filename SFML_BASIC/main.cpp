@@ -165,6 +165,7 @@ int main()
 		//draw the world
 		shader.setParameter("normals", false);
 		shader.setParameter("maxheight", terrain.hMax);
+		//shader.setParameter("tex1", waterTexture);
 		sf::Texture::bind(&waterTexture);
 		terrain.Draw();
 
