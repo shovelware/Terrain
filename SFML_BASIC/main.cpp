@@ -43,6 +43,19 @@ int main()
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 
+	//load the texture maps
+	
+	sf::Texture grassTexture;
+	sf::Texture snowyRocksTexture;
+	sf::Texture waterTexture;
+
+	if (grassTexture.loadFromFile("asset/grassMap.png")){ cout << "grass texture loaded successfully" << endl; }
+	else cout << "Failed to load grass texture" << endl;
+	if (snowyRocksTexture.loadFromFile("asset/snowyRocksMap.png")){ cout << "snowyRocks texture loaded successfully" << endl; }
+	else cout << "Failed to load snowyRocks texture" << endl;
+	if (waterTexture.loadFromFile("asset/seaMap.png")){ cout << "water texture loaded successfully" << endl; }
+	else cout << "Failed to load water texture" << endl;
+
 	aiVector3D position(0, 20, -30);
 	aiVector3D zaxis(0, 0, 1); //-z to turn camera around
 	Camera camera;
@@ -152,6 +165,7 @@ int main()
 		//draw the world
 		shader.setParameter("normals", false);
 		shader.setParameter("maxheight", terrain.hMax);
+		sf::Texture::bind(&waterTexture);
 		terrain.Draw();
 
         // Finally, display rendered frame on screen 

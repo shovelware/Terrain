@@ -7,8 +7,14 @@ uniform bool normals;
 
 varying vec2 texv;
 
+uniform sampler2D tex1;
+
 void main()
 {
+
+	vec4 tex_map = texture2D( tex1, gl_TexCoord[0].st);
+	gl_FragColor = tex_map;
+	/*
 	//modulate the colour based on vertex height
 	if (!normals)
 	{
@@ -55,6 +61,6 @@ void main()
 
 		//Set colour rgb to (u, v, 0) from texture coord
 		gl_FragColor = vec4(texv, 0, 1);
-	}
+	}*/
 
 }
