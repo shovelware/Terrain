@@ -3,11 +3,13 @@
 
 Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 {
-	gridWidth = 50; //squares in grid
+	//squares in grid
+	gridWidth = 50; 
 	gridDepth = 50;
 
 	//50*50 makes heightmaps work, do not change!
-	terrWidth = 50; //size of terrain in world units
+	//size of terrain in world units
+	terrWidth = 50; 
 	terrDepth = 50;
 
 	vertices = NULL;
@@ -22,7 +24,9 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 	 std::cout << "Num verts: " << numVerts << std::endl << std::endl;
 
 	 //Avg. of width and depth
-	 hAdjust = (gridWidth + gridDepth) / 2;
+	 //Should = 50 at grid (50*50)
+	 //This method allows grid dimensions from 1 to about 90 before it gets silly
+	 hAdjust = 100 - ((gridWidth + gridDepth) / 2);
 
 	 hMax = heightProcess(colorProcess(sf::Color::White));
 }
@@ -148,6 +152,7 @@ float Terrain::heightMapLookup(float x,  float y)
 		unsigned int mapWidth = hm.getSize().x;
 		unsigned int mapHeight = hm.getSize().y;
 
+		//Still doesn't do right or bottom edge of grid, how to fix
 		sf::Color col = hm.getPixel(x * mapWidth, y * mapHeight);
 
 		//Do some stuff with the color for calculations
@@ -507,7 +512,6 @@ void Terrain::Init(){
 			//tri1
 			//side a
 			setVert(vertexNum, left, getHeight(left, front), front);
-
 			setCol(vertexNum, 255, 255, 255);
 			setTexFromVert(vertexNum, vertexNum);
 			calculateNormal(GLtoSF(vertices[vertexNum]), GLtoSF(vertices[vertexNum + 1]), vertexNum);

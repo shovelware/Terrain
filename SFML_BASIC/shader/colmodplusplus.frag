@@ -4,11 +4,6 @@
 varying float vertheight;
 uniform float maxheight;
 
-float norm(float start, float value, float end)
-{
-	return (value - start) / (end - start);
-}
-
 void main()
 {
 	float h = (vertheight / maxheight) * (100 / 1); //h is vertheight as a percentage of maxheight
@@ -36,7 +31,7 @@ void main()
 	//60 -> 75 : grass -> rocks
 	else if (h > 60)
 	{
-		float i = norm(60, h, 75);
+		float i = ((h - 60) / 15);
 		gl_FragColor = mix(grs, rck, i);
 	}
 
@@ -49,7 +44,7 @@ void main()
 	//25 -> 50 : sand -> grass
 	else if (h > 25)
 	{
-		float i = norm(25, h, 50);
+		float i = ((h - 25) / 25);
 		gl_FragColor = mix(snd, grs, i);
 	}
 
