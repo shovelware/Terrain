@@ -6,15 +6,23 @@ uniform float maxheight;
 
 varying vec2 texv;
 
-uniform sampler2D tex1;
+uniform sampler2D tex1;//water
+uniform sampler2D tex2;//grass
+uniform sampler2D tex3;//snowy-rocks
 
 void main()
 {
 	vec4 tex_map = texture2D( tex1, gl_TexCoord[0].st);
-	gl_FragColor = tex_map;
+	vec4 tex_map1 = texture2D( tex2, gl_TexCoord[0].st);
+	vec4 tex_map2 = texture2D( tex3, gl_TexCoord[0].st);
+
+	//gl_FragColor = tex_map;
 
 	//modulate the colour based on vertex height
 	float h = (vertheight / maxheight) * (100 / 1); //h is vertheight as a percentage of maxheight
+	if(h < 50)
+		gl_FragColor = tex_map;
+	else gl_FragColor = tex_map1;
 	
 	/* PROBABLY NEED THIS FOR BLENDING SO IT CAN STAY HERE
 
