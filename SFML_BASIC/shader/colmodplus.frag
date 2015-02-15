@@ -27,10 +27,12 @@ void main()
 		gl_FragColor = sno;
 	}
 
-	//75 -> 90 : rocks -> snow
+	//75 -> 90 : rocks	//-> snow
 	else if (h > 75)
 	{
-		gl_FragColor = rck;
+			//if(h<83)
+			gl_FragColor = rck;
+			//else gl_FragColor = (rck*0.7) + (sno*0.3);
 	}
 
 	//60 -> 75 : grass -> rocks
@@ -38,6 +40,11 @@ void main()
 	{
 		float i = norm(60, h, 75);
 		gl_FragColor = mix(grs, rck, i);
+			//if(h<70)
+			//	gl_FragColor = grs;
+			//else gl_FragColor = (grs*0.5)+(rck*0.7);
+		//float i = ((h - 60) / 15) * (1000 / 1);
+		//gl_FragColor = grs + rck; //This breaks stuff
 	}
 
 	//50 -> 60 : grass
@@ -51,6 +58,12 @@ void main()
 	{
 		float i = norm(25, h, 50);
 		gl_FragColor = mix(snd, grs, i);
+
+		//float i = ((h - 25) / 25) * (100 / 1);
+		//gl_FragColor = (snd * (i)) + (grs * (1 - i)); // Something like this?
+			//if(h <30)
+			//	gl_FragColor = gl_FragColor = snd;
+			//else gl_FragColor = (snd*0.5) + (grs*0.9);
 	}
 
 	//10 -> 25 : sand

@@ -76,6 +76,8 @@ int main()
 	//possibly how we do an orthographics perspective?
 	//glOrtho(-200, 200, -200, 200, -200, 200); //left,right,bottom,top,nearVal,farVal
 
+	glEnable(GL_TEXTURE_2D);//enable the use of textures
+
 	//load the shaders
 	sf::Shader plain;
 	sf::Shader colmod;
@@ -170,7 +172,7 @@ int main()
 		//draw the world
 		//sf::Texture::bind(&waterTexture);
 		terrain.DrawTerrain(&colmodplus);
-		terrain.DrawNormals(&plain);
+		//terrain.DrawNormals(&plain);
 
         // Finally, display rendered frame on screen 
         window.display(); 

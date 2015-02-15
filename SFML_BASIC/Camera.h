@@ -100,8 +100,6 @@ public:
 		}
 
 		//else keyPressed = false;
-
-
 	}
 
 	void MoveLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
