@@ -64,7 +64,7 @@ int main()
       
     //prepare OpenGL surface for HSR 
     glClearDepth(1.f); 
-    glClearColor(0.9f, 0.4f, 0.1f, 0.f); //background colour
+    glClearColor(0.6f, 0.4f, 0.1f, 0.f); //background colour
     glEnable(GL_DEPTH_TEST); 
     glDepthMask(GL_TRUE); 
    
@@ -83,12 +83,14 @@ int main()
 	sf::Shader norm;
 	sf::Shader texmap;
 	sf::Shader texture;
+	sf::Shader colmodplus;
 
 	if (!plain.loadFromFile("shader/plain.vert", "shader/plain.frag")) { exit(1); }
 	if (!colmod.loadFromFile("shader/colmod.vert", "shader/colmod.frag")) { exit(1); }
 	if (!norm.loadFromFile("shader/norm.vert", "shader/norm.frag")) { exit(1); }
 	if (!texmap.loadFromFile("shader/texmap.vert", "shader/texmap.frag")) { exit(1); }
 	if (!texture.loadFromFile("shader/texture.vert", "shader/texture.frag")) { exit(1); }
+	if (!colmodplus.loadFromFile("shader/colmodplus.vert", "shader/colmodplus.frag")) { exit(1); }
 
 	//Create our Terrain
 	Terrain terrain;
@@ -167,8 +169,8 @@ int main()
 		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		//draw the world
-		sf::Texture::bind(&waterTexture);
-		terrain.DrawTerrain(&texture);
+		//sf::Texture::bind(&waterTexture);
+		terrain.DrawTerrain(&colmodplus);
 		terrain.DrawNormals(&plain);
 
         // Finally, display rendered frame on screen 

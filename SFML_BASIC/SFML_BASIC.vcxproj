@@ -84,6 +84,8 @@
     <None Include="ReadMe.txt" />
     <None Include="shader\colmod.frag" />
     <None Include="shader\colmod.vert" />
+    <None Include="shader\colmodplus.frag" />
+    <None Include="shader\colmodplus.vert" />
     <None Include="shader\norm.frag" />
     <None Include="shader\norm.vert" />
     <None Include="shader\plain.frag" />
