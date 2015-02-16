@@ -60,6 +60,10 @@ class Terrain
 	bool drawSolid = true;
 	bool drawNormals = false;
 
+	sf::Texture grassTexture;
+	sf::Texture snowyRocksTexture;
+	sf::Texture waterTexture;
+
 public:
 	Terrain(void);
 	~Terrain(void);

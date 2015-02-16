@@ -29,6 +29,14 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 	 hAdjust = 100 - ((gridWidth + gridDepth) / 2);
 
 	 hMax = heightProcess(colorProcess(sf::Color::White));
+
+	 if (grassTexture.loadFromFile("asset/grassMap.png")){ cout << "grass texture loaded successfully" << endl; }
+	 else cout << "Failed to load grass texture" << endl;
+	 if (snowyRocksTexture.loadFromFile("asset/snowyRocksMap.png")){ cout << "snowyRocks texture loaded successfully" << endl; }
+	 else cout << "Failed to load snowyRocks texture" << endl;
+	 if (waterTexture.loadFromFile("asset/seaMap.png")){ cout << "water texture loaded successfully" << endl; }
+	 else cout << "Failed to load water texture" << endl;
+	 cout << endl;
 }
 
 Terrain::~Terrain(void)
@@ -594,6 +602,9 @@ void Terrain::DrawTerrainTextured(sf::Shader * shdr)
 	//Set up shader and parameters
 	sf::Shader::bind(shdr);
 	shdr->setParameter("maxheight", hMax);
+	shdr->setParameter("tex1", waterTexture);
+	shdr->setParameter("tex2", grassTexture);
+	shdr->setParameter("tex3", snowyRocksTexture);
 	//Provisional method for if you want to set textures based on parameters (do that here)
 
 	if (drawSolid)

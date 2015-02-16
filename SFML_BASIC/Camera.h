@@ -16,7 +16,9 @@ public:
     float forwardSpeed;
     float roationSpeed;
 	bool keyPressed;
-     
+    
+	float pitch;
+
     Camera():forwardSpeed(0.5f),roationSpeed(0.1f){}
  
     void Init(aiVector3D& p=zero, aiVector3D& f=zaxis, aiVector3D& u=yaxis){
@@ -25,6 +27,7 @@ public:
         up=u;
 		keyPressed = false;
 		right = aiVector3D(1, 0, 0);
+		pitch = 0;
     }
  
 	void CheckInputKB(sf::Keyboard k)
@@ -114,8 +117,8 @@ public:
 
 	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-		//position.y += (up.y*(forwardSpeed*(dir)));
-		position += (up*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
+		position.y += (up.y*(forwardSpeed*(dir)));
+		//position += (up*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
 	}
 
 	void MoveForwardBack(float dir){ //Dir=+1=>Forward, dir=-1=> Back
@@ -137,16 +140,20 @@ public:
 		//TODO
 
 		//forward.y += sin(dir * (3.14/180));
+		pitch += dir;
 
-		//get the right vector
-		aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
-			(forward.z*up.x) - (forward.x*up.z),
-			(forward.x*up.y) - (forward.y*up.x));
+		if (pitch < 1.57 && pitch > -1.57)
+		{
+			//get the right vector
+			aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
+				(forward.z*up.x) - (forward.x*up.z),
+				(forward.x*up.y) - (forward.y*up.x));
 
 
-		aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir));
-		forward = Quat.Rotate(forward);
-		up = Quat.Rotate(up);
+			aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir));
+			forward = Quat.Rotate(forward);
+			up = Quat.Rotate(up);
+		}
 
 	}
  
