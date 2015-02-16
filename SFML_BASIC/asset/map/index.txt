@@ -35,3 +35,6 @@ tux
 world
 biodiversity
 heatmap
+
+//islands
+island

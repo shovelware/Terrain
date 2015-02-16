@@ -157,12 +157,18 @@ int main()
 		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 		//draw the world
+<<<<<<< HEAD
 
 		//sf::Texture::bind(&waterTexture);
 		terrain.DrawTerrainTextured(&texture);
 		//terrain.DrawTerrain(&colmodplus);
 		//terrain.DrawNormals(&plain);
 
+=======
+		terrain.DrawTerrainTextured(&texture);
+		//terrain.DrawTerrain(&colmodplus);
+		terrain.DrawNormals(&plain);
+>>>>>>> 8826a3fdf2d1f7df0831487651b6929eacda75d1
 
         // Finally, display rendered frame on screen 
         window.display(); 
