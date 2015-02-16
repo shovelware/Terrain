@@ -43,8 +43,8 @@ int main()
     sf::Clock Clock; 
 
 
-	aiVector3D position(0, 20, -30);
-	aiVector3D zaxis(0, 0, 1); //-z to turn camera around
+	aiVector3D position(0, 20, 30);
+	aiVector3D zaxis(0, 0, -1); //-z to turn camera around
 	Camera camera;
     camera.Init(position, zaxis); //create a camera
       
@@ -129,7 +129,7 @@ int main()
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 
-			glOrtho(-200, 200, -200, 200, -200, 200); //left,right,bottom,top,nearVal,farVal
+			glOrtho(-45, 45, -45, 45, 1, 10000); //left,right,bottom,top,nearVal,farVal
 		}
 
 		//UPDATE

@@ -108,15 +108,16 @@ public:
 	void MoveLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
 		//cross product of forward and up to give us right
-		aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
+		right = aiVector3D((forward.y * up.z) - (forward.z*up.y),
 			(forward.z*up.x) - (forward.x*up.z),
 			(forward.x*up.y) - (forward.y*up.x));
 
-		position += temp.Normalize() * (forwardSpeed*(dir));
+		position += right.Normalize() * (forwardSpeed*(dir));
 	}
 
 	void MoveUpDown(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
+		//Still not entirely sure about this one
 		position.y += (up.y*(forwardSpeed*(dir)));
 		//position += (up*(forwardSpeed*(dir)));//this causes it to move up and down at a slight angle
 	}
@@ -128,8 +129,6 @@ public:
 
 	void TurnLeftRight(float dir){ //Dir=+1=>Right, dir=-1=> Left
 		//TODO
-
-		//forward.x += (sin(dir * (3.14 / 180))) * (cos(dir*(3.14 / 180)));
 		aiQuaternion Quat = aiQuaternion(up, (dir));
 		forward = Quat.Rotate(forward);
 		up = Quat.Rotate(up);
@@ -138,19 +137,17 @@ public:
 
 	void TurnUpDown(float dir){//Dir=+1=>Up, dir=-1=> Down
 		//TODO
-
-		//forward.y += sin(dir * (3.14/180));
 		pitch += dir;
 
-		if (pitch < 1.57 && pitch > -1.57)
+		if (pitch < 1.57 && pitch > -1.57)//Limit the amount the camera can rotate vertically so it dosen't flip over
 		{
 			//get the right vector
-			aiVector3D temp = aiVector3D((forward.y * up.z) - (forward.z*up.y),
+			right= aiVector3D((forward.y * up.z) - (forward.z*up.y),
 				(forward.z*up.x) - (forward.x*up.z),
 				(forward.x*up.y) - (forward.y*up.x));
 
 
-			aiQuaternion Quat = aiQuaternion((temp).Normalize(), (dir));
+			aiQuaternion Quat = aiQuaternion((right).Normalize(), (dir));
 			forward = Quat.Rotate(forward);
 			up = Quat.Rotate(up);
 		}
