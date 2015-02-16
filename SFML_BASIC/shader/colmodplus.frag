@@ -47,8 +47,8 @@ void main()
 		//gl_FragColor = grs + rck; //This breaks stuff
 	}
 
-	//50 -> 60 : grass
-	else if (h > 50)
+	//35 -> 60 : grass
+	else if (h > 35)
 	{
 		gl_FragColor = grs;
 	}
@@ -56,7 +56,7 @@ void main()
 	//25 -> 50 : sand -> grass
 	else if (h > 25)
 	{
-		float i = norm(25, h, 50);
+		float i = norm(25, h, 35);
 		gl_FragColor = mix(snd, grs, i);
 
 		//float i = ((h - 25) / 25) * (100 / 1);

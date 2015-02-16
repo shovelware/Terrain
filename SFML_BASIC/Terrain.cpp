@@ -9,8 +9,8 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 
 	//50*50 makes heightmaps work, do not change!
 	//size of terrain in world units
-	terrWidth = 25; 
-	terrDepth = 25;
+	terrWidth = 50; 
+	terrDepth = 50;
 
 	vertices = NULL;
 	normals = NULL;
