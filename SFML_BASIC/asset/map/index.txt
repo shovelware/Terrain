@@ -24,3 +24,14 @@ map200noise
 
 jaysMap
 jaysMap2
+
+//stolen maps
+copernicus
+dog
+mask
+nazi that coming
+rivers
+tux
+world
+biodiversity
+utube

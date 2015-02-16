@@ -173,7 +173,7 @@ int main()
 		sf::Texture::bind(&waterTexture);
 		//terrain.DrawTerrainTextured(&texture);
 		terrain.DrawTerrain(&colmodplus);
-		//terrain.DrawNormals(&plain);
+		terrain.DrawNormals(&plain);
 
         // Finally, display rendered frame on screen 
         window.display(); 

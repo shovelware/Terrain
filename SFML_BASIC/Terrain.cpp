@@ -9,8 +9,8 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 
 	//50*50 makes heightmaps work, do not change!
 	//size of terrain in world units
-	terrWidth = 50; 
-	terrDepth = 50;
+	terrWidth = 25; 
+	terrDepth = 25;
 
 	vertices = NULL;
 	normals = NULL;
@@ -119,14 +119,6 @@ float Terrain::normalisePos(float pos,  float max)
 	return 0 + (1 / max) * pos;
 
 	//(pos + start) / (end - start);
-}
-
-float Terrain::normaliseGridPos(float x, float y)
-{
-	float normX = normalisePos(x + 25, 50);
-	float normY = normalisePos(y + 25, 50);
-
-	return normX, normY;
 }
 
 //Wrapper function for vector2f support
@@ -262,8 +254,8 @@ float  Terrain::getHeight(float x,  float y){
 //getHeight takes OpenGL coords [-1 -> 1]
 float Terrain::getHeight(float x, float y){
 
-	float normX = normalisePos(x + 25, 50);
-	float normY = normalisePos(y + 25, 50);
+	float normX = normalisePos(x + terrWidth / 2, terrWidth);
+	float normY = normalisePos(y + terrDepth / 2, terrDepth);
 
 	return heightMapLookup(normX, normY);
 }
