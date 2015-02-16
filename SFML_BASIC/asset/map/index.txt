@@ -34,4 +34,4 @@ rivers
 tux
 world
 biodiversity
-utube
+heatmap

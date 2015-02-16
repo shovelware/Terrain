@@ -79,8 +79,8 @@ void Terrain::setTex(int index, float u, float v)
 //Sets a texture coordinate based on the normalised x and z of a vertex
 void Terrain::setTexFromVert(int texIndex, int vertIndex)
 {
-	float u = normalisePos(vertices[vertIndex][0] + 25, terrWidth);
-	float v = normalisePos(vertices[vertIndex][2] + 25, terrDepth);
+	float u = normalisePos(vertices[vertIndex][0] + terrWidth / 2, terrWidth);
+	float v = normalisePos(vertices[vertIndex][2] + terrDepth / 2, terrDepth);
 
 	setTex(texIndex, u, v);
 }
