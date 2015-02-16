@@ -62,6 +62,8 @@ class Terrain
 	sf::Texture grassTexture;
 	sf::Texture snowyRocksTexture;
 	sf::Texture waterTexture;
+	sf::Texture sandTexture;
+	sf::Texture rockTexture;
 
 public:
 	Terrain(void);

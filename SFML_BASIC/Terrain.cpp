@@ -30,13 +30,24 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 
 	 hMax = heightProcess(colorProcess(sf::Color::White));
 
-	 if (grassTexture.loadFromFile("asset/grassMap.png")){ cout << "grass texture loaded successfully" << endl; }
+	 if (grassTexture.loadFromFile("asset/hdGrass2.png")){ cout << "grass texture loaded successfully" << endl; }
 	 else cout << "Failed to load grass texture" << endl;
-	 if (snowyRocksTexture.loadFromFile("asset/snowyRocksMap.png")){ cout << "snowyRocks texture loaded successfully" << endl; }
+	 if (snowyRocksTexture.loadFromFile("asset/hdSnow.png")){ cout << "snowyRocks texture loaded successfully" << endl; }
 	 else cout << "Failed to load snowyRocks texture" << endl;
-	 if (waterTexture.loadFromFile("asset/seaMap.png")){ cout << "water texture loaded successfully" << endl; }
+	 if (waterTexture.loadFromFile("asset/hdSea.png")){ cout << "water texture loaded successfully" << endl; }
+	 else cout << "Failed to load water texture" << endl;
+	 if (rockTexture.loadFromFile("asset/hdRocks.png")){ cout << "water texture loaded successfully" << endl; }
+	 else cout << "Failed to load water texture" << endl;
+	 if (sandTexture.loadFromFile("asset/hdSand.png")){ cout << "water texture loaded successfully" << endl; }
 	 else cout << "Failed to load water texture" << endl;
 	 cout << endl;
+
+	 //grassTexture.setSmooth(true);
+	 //snowyRocksTexture.setSmooth(true);
+	 //waterTexture.setSmooth(true);
+	 //rockTexture.setSmooth(true);
+	 //sandTexture.setSmooth(true);
+
 }
 
 Terrain::~Terrain(void)
@@ -597,6 +608,8 @@ void Terrain::DrawTerrainTextured(sf::Shader * shdr)
 	shdr->setParameter("tex1", waterTexture);
 	shdr->setParameter("tex2", grassTexture);
 	shdr->setParameter("tex3", snowyRocksTexture);
+	shdr->setParameter("tex4", rockTexture);
+	shdr->setParameter("tex5", sandTexture);
 	//Provisional method for if you want to set textures based on parameters (do that here)
 
 	if (drawSolid)
