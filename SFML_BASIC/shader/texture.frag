@@ -65,7 +65,7 @@ void main()
 	}
 
 	//50 -> 60 : grass
-	else if (h > 50)
+	else if (h > 35)
 	{
 		gl_FragColor = tex_map1;
 	}

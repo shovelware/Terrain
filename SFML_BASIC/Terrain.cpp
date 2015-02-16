@@ -42,12 +42,6 @@ Terrain::Terrain(void) : index("index.txt"), currentProcess(ADD), hAdjust(0.1)
 	 else cout << "Failed to load water texture" << endl;
 	 cout << endl;
 
-	 //grassTexture.setSmooth(true);
-	 //snowyRocksTexture.setSmooth(true);
-	 //waterTexture.setSmooth(true);
-	 //rockTexture.setSmooth(true);
-	 //sandTexture.setSmooth(true);
-
 }
 
 Terrain::~Terrain(void)
