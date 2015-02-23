@@ -1,0 +1,24 @@
+// Fill in the missing triangles
+	
+	-J
+    Find or create 3 texture maps (sea-surface, grass, snowy-rocks)
+    Each vertex on the grid should have an appropriate texture coordinate using glTexCood2D(). One corner of the grid should have texture coordinates of (0,0), opposite corner should be (1,1) all other vertices should have appropriate values
+    areas where two textures overlap, there should be a blended transition
+	Implement a free camera
+	
+	-Z
+    Create a smooth greyscale height map of your own design, it should incorporate mountains & valleys. There should be a flat area representing sea/water(about 25% of overall) with a value zero (pure black). There must be at least some areas with values above 0.95 (mountain tops)
+	Use the height map to modulate the y-coordinate of each vertex to be proportional to the value of the corresponding texel  in the height map. The height map should apply to the whole mesh.
+    Using the fragment shader apply all 3 of the texture maps to the surface only in the following areas (I am assuming heightmap min=0 & heightmap max=1)
+		sea-texture  in vertices where the height-map value is below 0.1
+		grass-texture where  height-map value is between 0.05 and 0.75
+		snowy-rocks where height-map value is above  0.6
+
+	-D
+    add a light source (not positioned directly overhead) and add diffuse lighting to the scene	
+    add easy to see specular light to the area of sea texture (nowhere else)	
+    lighting should be “per-pixel”
+    Pressing ‘o’ should change the projection to orthographic
+    Pressing ‘p’ should change the projection back to perspective
+    Pressing ‘i’ should toggle between solid and wireframe
+	
